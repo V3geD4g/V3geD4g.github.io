@@ -1,78 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<search> 
-  
-  
-    
-    <entry>
-      <title>BJDCTF2020-Mark-loves-cat</title>
-      <link href="/2020/06/23/BJDCTF2020-Mark-loves-cat/"/>
-      <url>/2020/06/23/BJDCTF2020-Mark-loves-cat/</url>
-      
-        <content type="html"><![CDATA[<p>稍微记录下吧，题目不难，主要是php了解的还是太少</p><p>题目知识点：.git泄露，php代码审计，可变变量</p><p>首先题目给了一个写的很好看的前端，拉到最底下看到一个dog</p><p>一开始也没啥思路，后来扫了下发现有.git源码泄露，主要代码如下</p><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">include</span> <span class="string">'flag.php'</span>;</span><br><span class="line"></span><br><span class="line">$yds = <span class="string">"dog"</span>;</span><br><span class="line">$is = <span class="string">"cat"</span>;</span><br><span class="line">$handsome = <span class="string">'yds'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span>($_POST <span class="keyword">as</span> $x =&gt; $y)&#123;</span><br><span class="line">    $$x = $y;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span>($_GET <span class="keyword">as</span> $x =&gt; $y)&#123;</span><br><span class="line">    $$x = $$y;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span>($_GET <span class="keyword">as</span> $x =&gt; $y)&#123;</span><br><span class="line">    <span class="keyword">if</span>($_GET[<span class="string">'flag'</span>] === $x &amp;&amp; $x !== <span class="string">'flag'</span>)&#123;</span><br><span class="line">        <span class="keyword">exit</span>($handsome);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(!<span class="keyword">isset</span>($_GET[<span class="string">'flag'</span>]) &amp;&amp; !<span class="keyword">isset</span>($_POST[<span class="string">'flag'</span>]))&#123;</span><br><span class="line">    <span class="keyword">exit</span>($yds);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>($_POST[<span class="string">'flag'</span>] === <span class="string">'flag'</span>  || $_GET[<span class="string">'flag'</span>] === <span class="string">'flag'</span>)&#123;</span><br><span class="line">    <span class="keyword">exit</span>($is);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> <span class="string">"the flag is: "</span>.$flag;</span><br></pre></td></tr></table></figure><p>来稍微讲讲这段代码吧，自己php也懂得不多，也是一步步调试才看懂的（我太菜了.jpg）</p><p>首先是foreach这个函数，这里拿get这段来将吧，post这题其实用不到</p><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">foreach</span>($_GET <span class="keyword">as</span> $x =&gt; $y)&#123;</span><br><span class="line">    $$x = $$y;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>当这里输入 <code>xxx/?yds=flag</code> 后，括号中的$x为yds，$y为flag；然后里面的$$x表示$yds，$$y表示$flag，这个时候就把flag的值赋给了yds</p><p>这就是所谓的可变变量，就是把一个变量的值变为另一个变量的名字</p><p>这题只要输入这个就出结果了，因为下面的三个exit中，只会执行这一段</p><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(!<span class="keyword">isset</span>($_GET[<span class="string">'flag'</span>]) &amp;&amp; !<span class="keyword">isset</span>($_POST[<span class="string">'flag'</span>]))&#123;</span><br><span class="line">    <span class="keyword">exit</span>($yds);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>因为我们传入的get参数中没有flag，也没post传入任何参数，所以就直接带着$yds退出了，而yds中之前就保存了flag的值，到这里也就出结果了</p><p>最后附上一些调试截图方便理解</p><p><img src="/2020/06/23/BJDCTF2020-Mark-loves-cat/1.png" alt></p><p>执行完get的foreach，此时yds变量已经变成了flag的值</p><p><img src="/2020/06/23/BJDCTF2020-Mark-loves-cat/2.png" alt></p><p>不会执行其他的exit因为都不满足条件，此时就会带着yds，也就是flag的值退出</p><p><img src="/2020/06/23/BJDCTF2020-Mark-loves-cat/3.png" alt></p>]]></content>
-      
-      
+<search>
+  <entry>
+    <title>BJDCTF2020-Mark-loves-cat</title>
+    <url>/2020/06/23/BJDCTF2020-Mark-loves-cat/</url>
+    <content><![CDATA[<p>稍微记录下吧，题目不难，主要是php了解的还是太少</p>
+<p>题目知识点：.git泄露，php代码审计，可变变量</p>
+<p>首先题目给了一个写的很好看的前端，拉到最底下看到一个dog</p>
+<p>一开始也没啥思路，后来扫了下发现有.git源码泄露，主要代码如下</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">include</span> <span class="string">'flag.php'</span>;</span><br><span class="line"></span><br><span class="line">$yds = <span class="string">"dog"</span>;</span><br><span class="line">$is = <span class="string">"cat"</span>;</span><br><span class="line">$handsome = <span class="string">'yds'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span>($_POST <span class="keyword">as</span> $x =&gt; $y)&#123;</span><br><span class="line">    $$x = $y;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span>($_GET <span class="keyword">as</span> $x =&gt; $y)&#123;</span><br><span class="line">    $$x = $$y;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span>($_GET <span class="keyword">as</span> $x =&gt; $y)&#123;</span><br><span class="line">    <span class="keyword">if</span>($_GET[<span class="string">'flag'</span>] === $x &amp;&amp; $x !== <span class="string">'flag'</span>)&#123;</span><br><span class="line">        <span class="keyword">exit</span>($handsome);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(!<span class="keyword">isset</span>($_GET[<span class="string">'flag'</span>]) &amp;&amp; !<span class="keyword">isset</span>($_POST[<span class="string">'flag'</span>]))&#123;</span><br><span class="line">    <span class="keyword">exit</span>($yds);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>($_POST[<span class="string">'flag'</span>] === <span class="string">'flag'</span>  || $_GET[<span class="string">'flag'</span>] === <span class="string">'flag'</span>)&#123;</span><br><span class="line">    <span class="keyword">exit</span>($is);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> <span class="string">"the flag is: "</span>.$flag;</span><br></pre></td></tr></table></figure>
+
+<p>来稍微讲讲这段代码吧，自己php也懂得不多，也是一步步调试才看懂的（我太菜了.jpg）</p>
+<p>首先是foreach这个函数，这里拿get这段来将吧，post这题其实用不到</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">foreach</span>($_GET <span class="keyword">as</span> $x =&gt; $y)&#123;</span><br><span class="line">    $$x = $$y;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当这里输入 <code>xxx/?yds=flag</code> 后，括号中的$x为yds，$y为flag；然后里面的$$x表示$yds，$$y表示$flag，这个时候就把flag的值赋给了yds</p>
+<p>这就是所谓的可变变量，就是把一个变量的值变为另一个变量的名字</p>
+<p>这题只要输入这个就出结果了，因为下面的三个exit中，只会执行这一段</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span>(!<span class="keyword">isset</span>($_GET[<span class="string">'flag'</span>]) &amp;&amp; !<span class="keyword">isset</span>($_POST[<span class="string">'flag'</span>]))&#123;</span><br><span class="line">    <span class="keyword">exit</span>($yds);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>因为我们传入的get参数中没有flag，也没post传入任何参数，所以就直接带着$yds退出了，而yds中之前就保存了flag的值，到这里也就出结果了</p>
+<p>最后附上一些调试截图方便理解</p>
+<p><img src="/2020/06/23/BJDCTF2020-Mark-loves-cat/1.png" alt></p>
+<p>执行完get的foreach，此时yds变量已经变成了flag的值</p>
+<p><img src="/2020/06/23/BJDCTF2020-Mark-loves-cat/2.png" alt></p>
+<p>不会执行其他的exit因为都不满足条件，此时就会带着yds，也就是flag的值退出</p>
+<p><img src="/2020/06/23/BJDCTF2020-Mark-loves-cat/3.png" alt></p>
+]]></content>
       <categories>
-          
-          <category> 学习记录 </category>
-          
+        <category>学习记录</category>
       </categories>
-      
-      
-        <tags>
-            
-            <tag> wp </tag>
-            
-            <tag> php代码审计 </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>SQL注入一</title>
-      <link href="/2020/06/22/SQL%E6%B3%A8%E5%85%A5%E4%B8%80/"/>
-      <url>/2020/06/22/SQL%E6%B3%A8%E5%85%A5%E4%B8%80/</url>
-      
-        <content type="html"><![CDATA[<h3 id="1-sql注入步骤开始清晰（整型注入）"><a href="#1-sql注入步骤开始清晰（整型注入）" class="headerlink" title="1.sql注入步骤开始清晰（整型注入）"></a>1.sql注入步骤开始清晰（整型注入）</h3><p>​        union select 的作用是将两次查询结果和为一次再输出，先用union select *，*，*…等来判断字段列数，无报错及说明字段名猜测成功，之后再让前面查询的id查不出来（id输入很大或者可以and 0），即可只显示union select的内容。前台返回结果并不是表真实列数，再查看哪个字段有回显，即前台显示的是哪几个字段内容。</p><p>​        Mysql所有内容都存储于information_schema库中，里面有三个重要字段schemamata(存放所有数据库信息schema_name)，tables(存放所有数据库中的表名 table_name，table_schema表所属数据库名)，columns(存放前包含前两者的东西加上字段名column_name，内容最为详细).<br>​        Group_concat语句用于将所有查询出来的内容拼为一行，不然只会显示一个数据，如<code>Group_concat（schema_name）</code><br>​        Database（）用于查询当前数据库名称，如<code>select 1,database(),3 from information_schema.schemata（可以不加from）</code><br>​        知道数据库之后可以开始查询当前数据库所有表名，语句为 <code>select group_concat(table_name) from information_schema.tables where table_schema=database()</code><br>​        知道表名后可以开始查询当前表中所有字段名，语句为<code>select group_concat(column_name) from information_schema.columns where table_schema=database() and tablename=xxx(自己想查的表)</code><br>​        知道字段名称可以开始查数据了,语句为select 1,group_contact(字段名)，3 from 查出来数据库名.表名<br>​        Contact_ws函数用于将两个字段一起显示，例 <code>concat_ws(‘:’,user,pwd)</code>就是将两个字段以冒号分隔一起显示，想显示所有再在外面加<code>group_concat(concat_ws(&#39;:&#39;,user,pwd))</code><br>​        快速判断几列可以用order by，原理：order by x(数字)将会按照第x列来进行排序，超过了便会报错，所以能够快速确定列数</p><h3 id="2-基于报错的GET单引号双引号注入"><a href="#2-基于报错的GET单引号双引号注入" class="headerlink" title="2.基于报错的GET单引号双引号注入"></a>2.基于报错的GET单引号双引号注入</h3><p>​        在id=x后面加单（双引号）观察是否会报错，根据报错语句来实行注入，让我们自己的语句能够闭合（加单双引号，括号等），同时将后面的语句注释掉，一般可以用的方式有加/**/(基本用不上)，–+（加号等于空格），%23（#的url编码，直接输入不会被转义所以要这样），从而实现注入</p><h3 id="3-基于报错的POST单引号双引号注入"><a href="#3-基于报错的POST单引号双引号注入" class="headerlink" title="3.基于报错的POST单引号双引号注入"></a>3.基于报错的POST单引号双引号注入</h3><p>（以前写的，仅针对当时看的例子，很多地方表述不清，见谅）</p><p>​        一般为登陆界面，也是单双引号，不能在url中输入，需要在账户名密码中进行注入，在username中进行注入是，由于不知道账户是否存在，应该在username里闭合后加上 or 1，让其永远为真 ，这里的注释符号跟上面相同，但要多试几次，因为可能会被url转义，#可以直接用，不再需要变成23%，注释掉后sql语句中便不再判断密码，即可登陆成功（在用hackbar的时候passwd一般不能少）</p><h3 id="4-基于报错的POST双注入"><a href="#4-基于报错的POST双注入" class="headerlink" title="4.基于报错的POST双注入"></a>4.基于报错的POST双注入</h3><p>​        由于有时候加只加单引号或者双引号不能根据报错得到我们想知道的东西，所以有时候需要单双引号一起用，再根据报错来判断sql语句，实现注入。<br>​        知道用户名的情况下可以不用加or 1，就会登陆到当前用户名账户。使用之前的方式，发现order by判断列数成功后，union select却不回显数据，就需要 用到双注入。<br>​        先自己尝试，在mysql中自己查询数据发现</p><p><img src="/2020/06/22/SQL%E6%B3%A8%E5%85%A5%E4%B8%80/s1.png" alt="s1"></p><p>​        group by之后直接查询所有数据只会返回分类后的第一条。<br>​        Group by 后面如果加数字，那么就是根据select中的东西作为主键，如下图</p><p><img src="/2020/06/22/SQL%E6%B3%A8%E5%85%A5%E4%B8%80/s2.png" alt="s2"></p><p>Group by 1就是以table_schema作为主键，2就是count（*）<br>        使用group by * 会新生成一个临时表，临时表中*为主键，不能重复，所以利用这一特性，可以用rand函数实现注入，让其出错，从而从报错信息中获取数据，具体payload如下<br><code>Union select table_schema,count(*) from information_schema.tables group by concat(floor(rand()*2),version());</code> </p><p>​        其中的version()就是我们想要查询的内容，可以换成其他我们想查的，如database()等,floor是将rand值转化为整型，即只取0,1（必不可少），我们所需要知道的信息就全都在报错语句里。（如下图）</p><p><img src="/2020/06/22/SQL%E6%B3%A8%E5%85%A5%E4%B8%80/s3.png" alt="s3"></p><p>5.5.20即为数据库版本号，在错误信息里输出了<br>        在version这个地方就是我们要双注入的地方了，之所以叫双注入就是因为在这里要在查询一次，payload如下(例子)<br><code>Union select table_schema,count(*) from information_schema.tables group by concat(floor(rand()*2),(select group_concat(table_name) from information_schema.tables where table_schema=database()))</code><br>        这时候使用group_concat肯能导致查询数据太长查不出啦，可以在后面加<br>limit 0,1来限制返回行数，第一个数字代表第几行开始，第二个数字代表查几行如下<br><code>Union select table_schema,count(*) from information_schema.tables group by concat(floor(rand()*2),(select table_name from information_schema.tables where table_schema=database() limit 0,1))</code><br>        不报错就可能是查完了，当group by两个都错的时候他就会以一种奇特的方式运行，反到可以查出数据来，所以这时就确定了有几个表<br>        注意双注入要多试几次因为rand可能随机到一样的，直到报错为止</p>]]></content>
-      
-      
+      <tags>
+        <tag>wp</tag>
+        <tag>php代码审计</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SQL注入一</title>
+    <url>/2020/06/22/SQL%E6%B3%A8%E5%85%A5%E4%B8%80/</url>
+    <content><![CDATA[<h3 id="1-sql注入步骤开始清晰（整型注入）"><a href="#1-sql注入步骤开始清晰（整型注入）" class="headerlink" title="1.sql注入步骤开始清晰（整型注入）"></a>1.sql注入步骤开始清晰（整型注入）</h3><p>​        union select 的作用是将两次查询结果和为一次再输出，先用union select *，*，*…等来判断字段列数，无报错及说明字段名猜测成功，之后再让前面查询的id查不出来（id输入很大或者可以and 0），即可只显示union select的内容。前台返回结果并不是表真实列数，再查看哪个字段有回显，即前台显示的是哪几个字段内容。</p>
+<p>​        Mysql所有内容都存储于information_schema库中，里面有三个重要字段schemamata(存放所有数据库信息schema_name)，tables(存放所有数据库中的表名 table_name，table_schema表所属数据库名)，columns(存放前包含前两者的东西加上字段名column_name，内容最为详细).<br>​        Group_concat语句用于将所有查询出来的内容拼为一行，不然只会显示一个数据，如<code>Group_concat（schema_name）</code><br>​        Database（）用于查询当前数据库名称，如<code>select 1,database(),3 from information_schema.schemata（可以不加from）</code><br>​        知道数据库之后可以开始查询当前数据库所有表名，语句为 <code>select group_concat(table_name) from information_schema.tables where table_schema=database()</code><br>​        知道表名后可以开始查询当前表中所有字段名，语句为<code>select group_concat(column_name) from information_schema.columns where table_schema=database() and tablename=xxx(自己想查的表)</code><br>​        知道字段名称可以开始查数据了,语句为select 1,group_contact(字段名)，3 from 查出来数据库名.表名<br>​        Contact_ws函数用于将两个字段一起显示，例 <code>concat_ws(‘:’,user,pwd)</code>就是将两个字段以冒号分隔一起显示，想显示所有再在外面加<code>group_concat(concat_ws(&#39;:&#39;,user,pwd))</code><br>​        快速判断几列可以用order by，原理：order by x(数字)将会按照第x列来进行排序，超过了便会报错，所以能够快速确定列数</p>
+<h3 id="2-基于报错的GET单引号双引号注入"><a href="#2-基于报错的GET单引号双引号注入" class="headerlink" title="2.基于报错的GET单引号双引号注入"></a>2.基于报错的GET单引号双引号注入</h3><p>​        在id=x后面加单（双引号）观察是否会报错，根据报错语句来实行注入，让我们自己的语句能够闭合（加单双引号，括号等），同时将后面的语句注释掉，一般可以用的方式有加/**/(基本用不上)，–+（加号等于空格），%23（#的url编码，直接输入不会被转义所以要这样），从而实现注入</p>
+<h3 id="3-基于报错的POST单引号双引号注入"><a href="#3-基于报错的POST单引号双引号注入" class="headerlink" title="3.基于报错的POST单引号双引号注入"></a>3.基于报错的POST单引号双引号注入</h3><p>（以前写的，仅针对当时看的例子，很多地方表述不清，见谅）</p>
+<p>​        一般为登陆界面，也是单双引号，不能在url中输入，需要在账户名密码中进行注入，在username中进行注入是，由于不知道账户是否存在，应该在username里闭合后加上 or 1，让其永远为真 ，这里的注释符号跟上面相同，但要多试几次，因为可能会被url转义，#可以直接用，不再需要变成23%，注释掉后sql语句中便不再判断密码，即可登陆成功（在用hackbar的时候passwd一般不能少）</p>
+<h3 id="4-基于报错的POST双注入"><a href="#4-基于报错的POST双注入" class="headerlink" title="4.基于报错的POST双注入"></a>4.基于报错的POST双注入</h3><p>​        由于有时候加只加单引号或者双引号不能根据报错得到我们想知道的东西，所以有时候需要单双引号一起用，再根据报错来判断sql语句，实现注入。<br>​        知道用户名的情况下可以不用加or 1，就会登陆到当前用户名账户。使用之前的方式，发现order by判断列数成功后，union select却不回显数据，就需要 用到双注入。<br>​        先自己尝试，在mysql中自己查询数据发现</p>
+<p><img src="/2020/06/22/SQL%E6%B3%A8%E5%85%A5%E4%B8%80/s1.png" alt="s1"></p>
+<p>​        group by之后直接查询所有数据只会返回分类后的第一条。<br>​        Group by 后面如果加数字，那么就是根据select中的东西作为主键，如下图</p>
+<p><img src="/2020/06/22/SQL%E6%B3%A8%E5%85%A5%E4%B8%80/s2.png" alt="s2"></p>
+<p>Group by 1就是以table_schema作为主键，2就是count（*）<br>        使用group by * 会新生成一个临时表，临时表中*为主键，不能重复，所以利用这一特性，可以用rand函数实现注入，让其出错，从而从报错信息中获取数据，具体payload如下<br><code>Union select table_schema,count(*) from information_schema.tables group by concat(floor(rand()*2),version());</code> </p>
+<p>​        其中的version()就是我们想要查询的内容，可以换成其他我们想查的，如database()等,floor是将rand值转化为整型，即只取0,1（必不可少），我们所需要知道的信息就全都在报错语句里。（如下图）</p>
+<p><img src="/2020/06/22/SQL%E6%B3%A8%E5%85%A5%E4%B8%80/s3.png" alt="s3"></p>
+<p>5.5.20即为数据库版本号，在错误信息里输出了<br>        在version这个地方就是我们要双注入的地方了，之所以叫双注入就是因为在这里要在查询一次，payload如下(例子)<br><code>Union select table_schema,count(*) from information_schema.tables group by concat(floor(rand()*2),(select group_concat(table_name) from information_schema.tables where table_schema=database()))</code><br>        这时候使用group_concat肯能导致查询数据太长查不出啦，可以在后面加<br>limit 0,1来限制返回行数，第一个数字代表第几行开始，第二个数字代表查几行如下<br><code>Union select table_schema,count(*) from information_schema.tables group by concat(floor(rand()*2),(select table_name from information_schema.tables where table_schema=database() limit 0,1))</code><br>        不报错就可能是查完了，当group by两个都错的时候他就会以一种奇特的方式运行，反到可以查出数据来，所以这时就确定了有几个表<br>        注意双注入要多试几次因为rand可能随机到一样的，直到报错为止</p>
+]]></content>
       <categories>
-          
-          <category> 学习记录 </category>
-          
+        <category>学习记录</category>
       </categories>
-      
-      
-        <tags>
-            
-            <tag> SQL注入 </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>我的第一篇博客</title>
-      <link href="/2020/06/22/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/"/>
-      <url>/2020/06/22/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/</url>
-      
-        <content type="html"><![CDATA[<h1 id="欢迎来到我的博客！"><a href="#欢迎来到我的博客！" class="headerlink" title="欢迎来到我的博客！"></a>欢迎来到我的博客！</h1><p>一起来学习吧</p>]]></content>
-      
-      
+      <tags>
+        <tag>SQL注入</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>我的第一篇博客</title>
+    <url>/2020/06/22/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/</url>
+    <content><![CDATA[<h1 id="欢迎来到我的博客！"><a href="#欢迎来到我的博客！" class="headerlink" title="欢迎来到我的博客！"></a>欢迎来到我的博客！</h1><p>一起来学习吧</p>
+]]></content>
       <categories>
-          
-          <category> 起航 </category>
-          
+        <category>起航</category>
       </categories>
-      
-      
-    </entry>
-    
-    
-  
-  
+  </entry>
 </search>

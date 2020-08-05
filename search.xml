@@ -1,67 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>2020-SCTF-Misc-AndroidDisplayBridge</title>
-    <url>/2020/07/16/2020-SCTF-Misc-AndroidDisplayBridge/</url>
-    <content><![CDATA[<p>这道题主要参考了这位师傅的wp，挂个链接先</p>
-<p><a href="https://xuanxuanblingbling.github.io/ctf/android/2020/07/07/h264/#" target="_blank" rel="noopener">SCTF 2020 AndroidDisplayBridge</a></p>
-<ul>
-<li>题目附件：<a href="https://xuanxuanblingbling.github.io/assets/attachment/sctf_attachment.pcapng" target="_blank" rel="noopener">sctf_attachment.pcapng</a></li>
-</ul>
-<ul>
-<li>题目描述：Finding his android phone’s touchscreen not working, he logged in his computer and painted something…</li>
-</ul>
-<p>首先题目给了一个流量包，打开发现里面是tcp协议的一些流量，直接追踪看下</p>
-<p><img src="/2020/07/16/2020-SCTF-Misc-AndroidDisplayBridge/1.png" alt></p>
-<p>发现关键内容<em>/data/local/tmp/scrcpy-server.jar</em>，百度一下可以知道，是一款投屏软件，叫scrcpy</p>
-<ul>
-<li><a href="https://zhuanlan.zhihu.com/p/98696451" target="_blank" rel="noopener">安卓游戏利器scrcpy</a></li>
-</ul>
-<p>根据这篇知乎上的文章，可以知道scrcpy的视频流是H264编码，于是就去了解了下h264编码的视频格式</p>
-<p>这里引用下参考wp的师傅的话</p>
-<blockquote>
-<p>原来H264是一种视频编码，其中是没有声音信息的，如果在配上一段AAC编码的音频，就能封装出一个完整有图像有声音的MP4视频啦。如果去显示一下自己电脑中MP4视频的详细信息，一般也会看到视频和音频的编码方式。所以，知道未经过封装的H264的数据长什么样我们就能从数据包中把他提取出来。那么这个家伙长啥样呢？</p>
-<ul>
-<li><a href="https://www.jianshu.com/p/dc26fba79cdc" target="_blank" rel="noopener">解密纯264文件格式</a></li>
-<li><a href="https://blog.csdn.net/yuanchunsi/article/details/73194569" target="_blank" rel="noopener">H264格式说明及解析</a></li>
-</ul>
-</blockquote>
-<p>根据上面链接里了解到的，h264视频的文件头是<em>00 00 00 01 67</em>，而在数据包中尝试搜索了一下，发现确实是有这个开头的</p>
-<p><img src="/2020/07/16/2020-SCTF-Misc-AndroidDisplayBridge/2.png" alt></p>
-<p>所以现在要做的就是尝试将这个视频导出来</p>
-<p>这里可以用一个偷懒的办法</p>
-<blockquote>
-<p>虽然在一整个数据包中，视频流数据上下还穿插着adb的命令，不过我记得视频流编码的容错性非常强，而且如果播放器足够强大，花了呼哨的视频也能放出人来。所以我就直接导出了tcp流，选择数据为手机端发送，然后以原始数据导出，就获得了包含有H264的二进制文件</p>
-</blockquote>
-<p>就是直接选择5555端口发送出去的数据，即手机发送过去的数据，然后用原始数据的方式导出</p>
-<p><img src="/2020/07/16/2020-SCTF-Misc-AndroidDisplayBridge/3.png" alt></p>
-<p>导出后需要注意，这时视频还是不能直接播放的，以为文件头前还有多余内容，需要删掉才行</p>
-<p><img src="/2020/07/16/2020-SCTF-Misc-AndroidDisplayBridge/4.png" alt></p>
-<p>将00 00 00 01 67 前的内容删掉后，发现视频即可正常播放</p>
-<p><img src="/2020/07/16/2020-SCTF-Misc-AndroidDisplayBridge/5.png" alt></p>
-<p>最后得到flag</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">flag:SCTF&#123;better_access_with_scrcpy&#125;</span><br></pre></td></tr></table></figure>
-
-<p>也可以使用如下脚本将数据包中的视频导出:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pyshark</span><br><span class="line">captures = pyshark.FileCapture(<span class="string">'./sctf_attachment.pcapng'</span>)</span><br><span class="line">payload = <span class="string">""</span></span><br><span class="line"><span class="keyword">for</span> capture <span class="keyword">in</span> captures:</span><br><span class="line">    <span class="keyword">if</span> hasattr(capture.tcp,<span class="string">"payload"</span>) :</span><br><span class="line">        <span class="keyword">if</span> capture.ip.src == <span class="string">'192.168.1.103'</span>:</span><br><span class="line">            payload += capture.tcp.payload.replace(<span class="string">":"</span>,<span class="string">""</span>).decode(<span class="string">"hex"</span>) </span><br><span class="line">f = open(<span class="string">"out.h264"</span>,<span class="string">"wb"</span>)</span><br><span class="line">f.write(payload)</span><br></pre></td></tr></table></figure>
-
-<p>最后提供一下官方的解法，毕竟这只是一种偷懒的办法，要是内容再花里胡哨一点，估计这样做视频是放不出来的</p>
-<p>官方WP的解法是数据包中存在着触屏绘图的坐标，提取坐标即可画出flag，自己没想到，也感觉略麻烦。</p>
-<ul>
-<li><a href="https://github.com/SycloverSecurity/SCTF2020" target="_blank" rel="noopener">SCTF 2020</a></li>
-<li><a href="https://mp.weixin.qq.com/s/puJPmfKOsfbzV-11ggY75Q" target="_blank" rel="noopener">SCTF 2020 WriteUp By chamd5）</a></li>
-<li><a href="https://mp.weixin.qq.com/s/O_H-4bpvTbCIGwHZdqUEYg" target="_blank" rel="noopener">SCTF 2020 Writeup By W&amp;M（Misc部分）</a></li>
-</ul>
-]]></content>
-      <categories>
-        <category>学习记录</category>
-      </categories>
-      <tags>
-        <tag>wp</tag>
-        <tag>misc</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>2020-RCTF-Web-calc</title>
     <url>/2020/07/03/2020-RCTF-Web-calc/</url>
     <content><![CDATA[<p>这道题看了wp后也还是一脸懵逼的状态，但大致过程是了解了，知道了如何利用这个点去进行rce，至于里面的perl的exp，还有异或生成shell的python脚本，还得好好研究下，我太菜了！</p>
@@ -133,11 +72,72 @@
         <category>学习记录</category>
       </categories>
       <tags>
-        <tag>wp</tag>
         <tag>php代码审计</tag>
         <tag>无字符shell</tag>
         <tag>rce</tag>
         <tag>php位运算</tag>
+        <tag>wp</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>2020-SCTF-Misc-AndroidDisplayBridge</title>
+    <url>/2020/07/16/2020-SCTF-Misc-AndroidDisplayBridge/</url>
+    <content><![CDATA[<p>这道题主要参考了这位师傅的wp，挂个链接先</p>
+<p><a href="https://xuanxuanblingbling.github.io/ctf/android/2020/07/07/h264/#" target="_blank" rel="noopener">SCTF 2020 AndroidDisplayBridge</a></p>
+<ul>
+<li>题目附件：<a href="https://xuanxuanblingbling.github.io/assets/attachment/sctf_attachment.pcapng" target="_blank" rel="noopener">sctf_attachment.pcapng</a></li>
+</ul>
+<ul>
+<li>题目描述：Finding his android phone’s touchscreen not working, he logged in his computer and painted something…</li>
+</ul>
+<p>首先题目给了一个流量包，打开发现里面是tcp协议的一些流量，直接追踪看下</p>
+<p><img src="/2020/07/16/2020-SCTF-Misc-AndroidDisplayBridge/1.png" alt></p>
+<p>发现关键内容<em>/data/local/tmp/scrcpy-server.jar</em>，百度一下可以知道，是一款投屏软件，叫scrcpy</p>
+<ul>
+<li><a href="https://zhuanlan.zhihu.com/p/98696451" target="_blank" rel="noopener">安卓游戏利器scrcpy</a></li>
+</ul>
+<p>根据这篇知乎上的文章，可以知道scrcpy的视频流是H264编码，于是就去了解了下h264编码的视频格式</p>
+<p>这里引用下参考wp的师傅的话</p>
+<blockquote>
+<p>原来H264是一种视频编码，其中是没有声音信息的，如果在配上一段AAC编码的音频，就能封装出一个完整有图像有声音的MP4视频啦。如果去显示一下自己电脑中MP4视频的详细信息，一般也会看到视频和音频的编码方式。所以，知道未经过封装的H264的数据长什么样我们就能从数据包中把他提取出来。那么这个家伙长啥样呢？</p>
+<ul>
+<li><a href="https://www.jianshu.com/p/dc26fba79cdc" target="_blank" rel="noopener">解密纯264文件格式</a></li>
+<li><a href="https://blog.csdn.net/yuanchunsi/article/details/73194569" target="_blank" rel="noopener">H264格式说明及解析</a></li>
+</ul>
+</blockquote>
+<p>根据上面链接里了解到的，h264视频的文件头是<em>00 00 00 01 67</em>，而在数据包中尝试搜索了一下，发现确实是有这个开头的</p>
+<p><img src="/2020/07/16/2020-SCTF-Misc-AndroidDisplayBridge/2.png" alt></p>
+<p>所以现在要做的就是尝试将这个视频导出来</p>
+<p>这里可以用一个偷懒的办法</p>
+<blockquote>
+<p>虽然在一整个数据包中，视频流数据上下还穿插着adb的命令，不过我记得视频流编码的容错性非常强，而且如果播放器足够强大，花了呼哨的视频也能放出人来。所以我就直接导出了tcp流，选择数据为手机端发送，然后以原始数据导出，就获得了包含有H264的二进制文件</p>
+</blockquote>
+<p>就是直接选择5555端口发送出去的数据，即手机发送过去的数据，然后用原始数据的方式导出</p>
+<p><img src="/2020/07/16/2020-SCTF-Misc-AndroidDisplayBridge/3.png" alt></p>
+<p>导出后需要注意，这时视频还是不能直接播放的，以为文件头前还有多余内容，需要删掉才行</p>
+<p><img src="/2020/07/16/2020-SCTF-Misc-AndroidDisplayBridge/4.png" alt></p>
+<p>将00 00 00 01 67 前的内容删掉后，发现视频即可正常播放</p>
+<p><img src="/2020/07/16/2020-SCTF-Misc-AndroidDisplayBridge/5.png" alt></p>
+<p>最后得到flag</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">flag:SCTF&#123;better_access_with_scrcpy&#125;</span><br></pre></td></tr></table></figure>
+
+<p>也可以使用如下脚本将数据包中的视频导出:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pyshark</span><br><span class="line">captures = pyshark.FileCapture(<span class="string">'./sctf_attachment.pcapng'</span>)</span><br><span class="line">payload = <span class="string">""</span></span><br><span class="line"><span class="keyword">for</span> capture <span class="keyword">in</span> captures:</span><br><span class="line">    <span class="keyword">if</span> hasattr(capture.tcp,<span class="string">"payload"</span>) :</span><br><span class="line">        <span class="keyword">if</span> capture.ip.src == <span class="string">'192.168.1.103'</span>:</span><br><span class="line">            payload += capture.tcp.payload.replace(<span class="string">":"</span>,<span class="string">""</span>).decode(<span class="string">"hex"</span>) </span><br><span class="line">f = open(<span class="string">"out.h264"</span>,<span class="string">"wb"</span>)</span><br><span class="line">f.write(payload)</span><br></pre></td></tr></table></figure>
+
+<p>最后提供一下官方的解法，毕竟这只是一种偷懒的办法，要是内容再花里胡哨一点，估计这样做视频是放不出来的</p>
+<p>官方WP的解法是数据包中存在着触屏绘图的坐标，提取坐标即可画出flag，自己没想到，也感觉略麻烦。</p>
+<ul>
+<li><a href="https://github.com/SycloverSecurity/SCTF2020" target="_blank" rel="noopener">SCTF 2020</a></li>
+<li><a href="https://mp.weixin.qq.com/s/puJPmfKOsfbzV-11ggY75Q" target="_blank" rel="noopener">SCTF 2020 WriteUp By chamd5）</a></li>
+<li><a href="https://mp.weixin.qq.com/s/O_H-4bpvTbCIGwHZdqUEYg" target="_blank" rel="noopener">SCTF 2020 Writeup By W&amp;M（Misc部分）</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>学习记录</category>
+      </categories>
+      <tags>
+        <tag>wp</tag>
+        <tag>misc</tag>
       </tags>
   </entry>
   <entry>
@@ -215,8 +215,8 @@
         <category>学习记录</category>
       </categories>
       <tags>
-        <tag>wp</tag>
         <tag>php代码审计</tag>
+        <tag>wp</tag>
       </tags>
   </entry>
   <entry>
@@ -266,6 +266,31 @@
       <tags>
         <tag>php代码审计</tag>
         <tag>反序列化</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>pyshark模块的一些用法</title>
+    <url>/2020/08/05/pyshark%E6%A8%A1%E5%9D%97%E7%9A%84%E4%B8%80%E4%BA%9B%E7%94%A8%E6%B3%95/</url>
+    <content><![CDATA[<p>好久没更新了，随便写点吧，懒是真的懒，懒狗没救了( ╯□╰ )</p>
+<p>做了道比较简单的流量分析题，主要学到了pyshark的一些简单操作，题目是这个</p>
+<ul>
+<li>工业信息安全技能大赛-2019-山东站-线上-简单流量分析</li>
+</ul>
+<p>打开文件一看发现是一堆icmp流量，观察一下数据长度发现没超过126的，应该是ascii码没错了</p>
+<p><img src="/2020/08/05/pyshark%E6%A8%A1%E5%9D%97%E7%9A%84%E4%B8%80%E4%BA%9B%E7%94%A8%E6%B3%95/1.png" alt></p>
+<p>之后当然是写个脚本提取一下了，脚本如下</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pyshark</span><br><span class="line"><span class="keyword">import</span> base64</span><br><span class="line"></span><br><span class="line">L_flag = []</span><br><span class="line">packets = pyshark.FileCapture(<span class="string">'fetus_pcap.pcap'</span>)</span><br><span class="line"><span class="keyword">for</span> packet <span class="keyword">in</span> packets:</span><br><span class="line">    <span class="comment"># print(type(packet))  # 整个包，type是&lt;class 'pyshark.packet.packet.Packet'&gt;</span></span><br><span class="line">    <span class="keyword">for</span> pkt <span class="keyword">in</span> packet:</span><br><span class="line">        <span class="comment"># print(type(pkt))  # 分成了三个layer，type是&lt;class 'pyshark.packet.layer.Layer'&gt;</span></span><br><span class="line">        <span class="keyword">if</span> pkt.layer_name == <span class="string">"icmp"</span>:  <span class="comment"># 判断包类型是否为icmp</span></span><br><span class="line">            <span class="comment"># print(pkt.type)</span></span><br><span class="line">            <span class="keyword">if</span> int(pkt.type) != <span class="number">0</span>:  <span class="comment"># 判断是否为请求包，请求包为8，响应包为0</span></span><br><span class="line">                <span class="comment"># print(pkt.type)</span></span><br><span class="line">                L_flag.append(int(pkt.data_len))  <span class="comment"># 获取长度</span></span><br><span class="line">c = len(L_flag)</span><br><span class="line">print(L_flag)</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>, c):</span><br><span class="line">    L_flag[i] = chr(L_flag[i])</span><br><span class="line">print(<span class="string">''</span>.join(L_flag))</span><br><span class="line">print(base64.b64decode(<span class="string">''</span>.join(L_flag)))</span><br></pre></td></tr></table></figure>
+
+<p>把所有请求包长度提取出来转换为字符，发现是base64，解码后得到flag</p>
+<p><code>Ojpcbm1vbmdvZGI6IToxNzg0MzowOjk5OTk5Ojc6OjpcbnVidW50dTokNiRMaEhSb21URSRNN0M0bjg0VWNGTEFHe3h4MmI4YV82bW02NGNfZnNvY2lldHl9Ojo=
+b&#39;::\\nmongodb:!:17843:0:99999:7:::\\nubuntu:$6$LhHRomTE$M7C4n84UcFLAG{xx2b8a_6mm64c_fsociety}::&#39;</code></p>
+]]></content>
+      <categories>
+        <category>学习记录</category>
+      </categories>
+      <tags>
+        <tag>misc</tag>
+        <tag>wireshark</tag>
       </tags>
   </entry>
   <entry>
@@ -388,6 +413,15 @@
       </tags>
   </entry>
   <entry>
+    <title>我的第一篇博客</title>
+    <url>/2020/06/22/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/</url>
+    <content><![CDATA[<h1 id="欢迎来到我的博客！"><a href="#欢迎来到我的博客！" class="headerlink" title="欢迎来到我的博客！"></a>欢迎来到我的博客！</h1><p>一起来学习吧</p>
+]]></content>
+      <categories>
+        <category>起航</category>
+      </categories>
+  </entry>
+  <entry>
     <title>关于pop链的学习</title>
     <url>/2020/06/24/%E5%85%B3%E4%BA%8Epop%E9%93%BE%E7%9A%84%E5%AD%A6%E4%B9%A0/</url>
     <content><![CDATA[<h3 id="题目来源"><a href="#题目来源" class="headerlink" title="题目来源"></a>题目来源</h3><p><a href="https://www.bilibili.com/video/BV1oE411j7aF" target="_blank" rel="noopener">2020-3-1-prontosil-反序列化与POP链</a></p>
@@ -441,40 +475,6 @@
       <tags>
         <tag>php代码审计</tag>
         <tag>反序列化</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>我的第一篇博客</title>
-    <url>/2020/06/22/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/</url>
-    <content><![CDATA[<h1 id="欢迎来到我的博客！"><a href="#欢迎来到我的博客！" class="headerlink" title="欢迎来到我的博客！"></a>欢迎来到我的博客！</h1><p>一起来学习吧</p>
-]]></content>
-      <categories>
-        <category>起航</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>pyshark模块的一些用法</title>
-    <url>/2020/08/05/pyshark%E6%A8%A1%E5%9D%97%E7%9A%84%E4%B8%80%E4%BA%9B%E7%94%A8%E6%B3%95/</url>
-    <content><![CDATA[<p>好久没更新了，随便写点吧，懒是真的懒，懒狗没救了( ╯□╰ )</p>
-<p>做了道比较简单的流量分析题，主要学到了pyshark的一些简单操作，题目是这个</p>
-<ul>
-<li>工业信息安全技能大赛-2019-山东站-线上-简单流量分析</li>
-</ul>
-<p>打开文件一看发现是一堆icmp流量，观察一下数据长度发现没超过126的，应该是ascii码没错了</p>
-<p><img src="/2020/08/05/pyshark%E6%A8%A1%E5%9D%97%E7%9A%84%E4%B8%80%E4%BA%9B%E7%94%A8%E6%B3%95/1.png" alt></p>
-<p>之后当然是写个脚本提取一下了，脚本如下</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pyshark</span><br><span class="line"><span class="keyword">import</span> base64</span><br><span class="line"></span><br><span class="line">L_flag = []</span><br><span class="line">packets = pyshark.FileCapture(<span class="string">'fetus_pcap.pcap'</span>)</span><br><span class="line"><span class="keyword">for</span> packet <span class="keyword">in</span> packets:</span><br><span class="line">    <span class="comment"># print(type(packet))  # 整个包，type是&lt;class 'pyshark.packet.packet.Packet'&gt;</span></span><br><span class="line">    <span class="keyword">for</span> pkt <span class="keyword">in</span> packet:</span><br><span class="line">        <span class="comment"># print(type(pkt))  # 分成了三个layer，type是&lt;class 'pyshark.packet.layer.Layer'&gt;</span></span><br><span class="line">        <span class="keyword">if</span> pkt.layer_name == <span class="string">"icmp"</span>:  <span class="comment"># 判断包类型是否为icmp</span></span><br><span class="line">            <span class="comment"># print(pkt.type)</span></span><br><span class="line">            <span class="keyword">if</span> int(pkt.type) != <span class="number">0</span>:  <span class="comment"># 判断是否为请求包，请求包为8，响应包为0</span></span><br><span class="line">                <span class="comment"># print(pkt.type)</span></span><br><span class="line">                L_flag.append(int(pkt.data_len))  <span class="comment"># 获取长度</span></span><br><span class="line">c = len(L_flag)</span><br><span class="line">print(L_flag)</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>, c):</span><br><span class="line">    L_flag[i] = chr(L_flag[i])</span><br><span class="line">print(<span class="string">''</span>.join(L_flag))</span><br><span class="line">print(base64.b64decode(<span class="string">''</span>.join(L_flag)))</span><br></pre></td></tr></table></figure>
-
-<p>把所有请求包长度提取出来转换为字符，发现是base64，解码后得到flag</p>
-<p><code>Ojpcbm1vbmdvZGI6IToxNzg0MzowOjk5OTk5Ojc6OjpcbnVidW50dTokNiRMaEhSb21URSRNN0M0bjg0VWNGTEFHe3h4MmI4YV82bW02NGNfZnNvY2lldHl9Ojo=
-b&#39;::\\nmongodb:!:17843:0:99999:7:::\\nubuntu:$6$LhHRomTE$M7C4n84UcFLAG{xx2b8a_6mm64c_fsociety}::&#39;</code></p>
-]]></content>
-      <categories>
-        <category>学习记录</category>
-      </categories>
-      <tags>
-        <tag>misc</tag>
-        <tag>wireshark</tag>
       </tags>
   </entry>
   <entry>

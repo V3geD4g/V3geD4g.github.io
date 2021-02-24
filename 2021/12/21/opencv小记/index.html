@@ -20,17 +20,20 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="一个小菜鸡的个人博客">
-<meta property="og:type" content="website">
-<meta property="og:title" content="V3D4&#39;s Blog">
-<meta property="og:url" content="http://yoursite.com/tags/SQL%E6%B3%A8%E5%85%A5/index.html">
+  <meta name="description" content="opencv小记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="opencv小记">
+<meta property="og:url" content="http://yoursite.com/2021/12/21/opencv%E5%B0%8F%E8%AE%B0/index.html">
 <meta property="og:site_name" content="V3D4&#39;s Blog">
-<meta property="og:description" content="一个小菜鸡的个人博客">
+<meta property="og:description" content="opencv小记">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-12-21T04:11:40.000Z">
+<meta property="article:modified_time" content="2021-02-24T04:11:44.652Z">
 <meta property="article:author" content="V3geD4g">
+<meta property="article:tag" content="open-cv">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://yoursite.com/tags/SQL%E6%B3%A8%E5%85%A5/">
+<link rel="canonical" href="http://yoursite.com/2021/12/21/opencv%E5%B0%8F%E8%AE%B0/">
 
 
 <script id="page-configurations">
@@ -38,12 +41,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>标签: SQL注入 | V3D4's Blog</title>
+  <title>opencv小记 | V3D4's Blog</title>
   
 
 
@@ -187,51 +190,127 @@
         <div class="content-wrap">
           
 
-          <div class="content tag">
+          <div class="content post posts-expand">
             
 
+    
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <h2 class="collection-header">SQL注入
-          <small>标签</small>
-        </h2>
-      </div>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/12/21/opencv%E5%B0%8F%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="V3geD4g">
+      <meta itemprop="description" content="一个小菜鸡的个人博客">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="V3D4's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          opencv小记
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-12-21 12:11:40" itemprop="dateCreated datePublished" datetime="2021-12-21T12:11:40+08:00">2021-12-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-02-24 12:11:44" itemprop="dateModified" datetime="2021-02-24T12:11:44+08:00">2021-02-24</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/" itemprop="url" rel="index"><span itemprop="name">学习记录</span></a>
+                </span>
+            </span>
+
+          
+            <div class="post-description">opencv小记</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2020</span>
+        <p>此次学习原因是F5杯阿狸大大大师傅的一个爆破png宽高的图，此题crc改成的错误宽高的crc，并且删掉了几个像素块，所以直接改宽高必然得不到图片，需要用到opencv中的高斯消噪处理之类的东西，我也完全不懂，只能浅显的学习下opencv的一些简单操作</p>
+<p>先贴个狸师傅的源码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line">img = cv2.imread(<span class="string">'flag.png'</span>)</span><br><span class="line"><span class="comment"># t = img.shape</span></span><br><span class="line"><span class="comment"># t1 = img.reshape(-1)</span></span><br><span class="line"><span class="comment"># t2 = img.reshape(-1, 1)</span></span><br><span class="line"><span class="comment"># t3 = img.reshape(-1, 1, 3)</span></span><br><span class="line">img = img.reshape(<span class="number">-1</span>, <span class="number">1</span>, <span class="number">3</span>)</span><br><span class="line"><span class="comment"># t1 = img.shape</span></span><br><span class="line">totPoints = img.shape[<span class="number">0</span>]</span><br><span class="line"><span class="keyword">import</span> tqdm</span><br><span class="line"></span><br><span class="line">mins = <span class="number">1e10</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getgauss</span><span class="params">(w)</span>:</span></span><br><span class="line">    tp = totPoints - totPoints % w</span><br><span class="line">    <span class="comment"># t = img[0,0,:]</span></span><br><span class="line">    <span class="comment"># t = img[:tp, :, :]</span></span><br><span class="line">    <span class="comment"># t = t.reshape(-1,w)</span></span><br><span class="line">    <span class="comment"># t = t.reshape(-1,w,3)</span></span><br><span class="line">    src = img[:tp, :, :].reshape(<span class="number">-1</span>, w, <span class="number">3</span>) <span class="comment">#更改宽高</span></span><br><span class="line">    gauss = cv2.GaussianBlur(src, (<span class="number">3</span>, <span class="number">3</span>), <span class="number">3</span>) <span class="comment">#(3, 3)表示高斯矩阵的长与宽都是3，标准差取3</span></span><br><span class="line">    gaussedge = cv2.Canny(gauss, <span class="number">0</span>, <span class="number">50</span>)</span><br><span class="line">    ge = np.sum(gaussedge)</span><br><span class="line">    <span class="keyword">return</span> ge</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">x = []</span><br><span class="line">y = []</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> tqdm.trange(<span class="number">10</span>, <span class="number">2000</span>, <span class="number">1</span>):</span><br><span class="line">    now = getgauss(i)</span><br><span class="line">    x.append(i)</span><br><span class="line">    y.append(now)</span><br><span class="line">    <span class="keyword">if</span> now &lt; mins:</span><br><span class="line">        <span class="comment"># print(x[-1])</span></span><br><span class="line">        <span class="comment"># print(i)</span></span><br><span class="line">        mins = now</span><br><span class="line">        tp = totPoints - totPoints % i <span class="comment">#更改宽高</span></span><br><span class="line">        src = img[:tp, :, :].reshape(<span class="number">-1</span>, i, <span class="number">3</span>)</span><br><span class="line">        plt.cla()</span><br><span class="line">        plt.imshow(src)</span><br><span class="line">        plt.imsave(<span class="string">'123.png'</span>, src)</span><br><span class="line">        plt.pause(<span class="number">0.1</span>)</span><br><span class="line">plt.show()</span><br><span class="line">plt.plot(x, y)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+
+
+<p>引用方法</p>
+<p>需要和numpy一起引用</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br></pre></td></tr></table></figure>
+
+<p>读取图片</p>
+ <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cv2.imread(<span class="string">'flag.png'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>imread返回的是一个三维矩阵，代表的是每个像素的信息</p>
+<p>我们通过cv2读图片时，数据读取的通道顺序是bgr，并且是height， width， channel的排列方式。</p>
+<p><code>img.shape</code></p>
+<p><code>&lt;class &#39;tuple&#39;&gt;: (419799, 5, 3)</code></p>
+<p>从img.shape中可以看出，三维数组的形状，第一维是高度，第二维是宽度，第三维是每个像素点的信息</p>
+<p><code>np.reshape(-1,1,3)</code></p>
+<p>reshape用于转换矩阵，第一个-1表示将当前矩阵无论几维都转成一维，第二个1表示将矩阵再转为二维，列数为1，第三个3表示将矩阵转为三维，列数3，以此类推，加几个参数即转为几维度，数字表示列数</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">gauss = cv2.GaussianBlur(src, (<span class="number">3</span>, <span class="number">3</span>), <span class="number">3</span>) </span><br><span class="line"><span class="comment">#(3, 3)表示高斯矩阵的长与宽都是3，标准差取3</span></span><br><span class="line">gaussedge = cv2.Canny(gauss, <span class="number">0</span>, <span class="number">50</span>)</span><br><span class="line">ge = np.sum(gaussedge)</span><br></pre></td></tr></table></figure>
+
+<p>高斯消噪处理，算法方面的，完全不懂，暂时先知道怎么用吧</p>
+<p>(3, 3)表示高斯矩阵的长与宽都是3，最后的3表示标准差取3</p>
+<p>cv2.Canny表示进行canny边缘检测，也完全不懂</p>
+<p><code>np.sum</code>用于矩阵求和</p>
+<p>这个大概意思就是进行高斯消噪处理后对于边缘的数据求和，小于特定值就更新min，同时输出，即可能为正常图片</p>
+<p>这里的初始值就设为了1e10</p>
+<p><code>tqdm</code>为是一个显示处理时进度条的模块，简单用法如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">s = <span class="number">0</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> tqdm.trange(<span class="number">100000000000</span>):</span><br><span class="line">    s += <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p>也可以参考 <a href="https://blog.csdn.net/zkp_987/article/details/81748098" target="_blank" rel="noopener">https://blog.csdn.net/zkp_987/article/details/81748098</a></p>
+
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+    
+    
+    
 
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-06-22T17:20:02+08:00"
-              content="2020-06-22">
-          06-22
-        </time>
-      </div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/open-cv/" rel="tag"># open-cv</a>
+          </div>
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/06/22/SQL%E6%B3%A8%E5%85%A5%E4%B8%80/" itemprop="url">
-            <span itemprop="name">SQL注入一</span>
-          </a>
-      </div>
+        
 
-    </header>
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/02/19/bugku-%E9%BB%84%E9%81%93%E5%8D%81%E4%BA%8C%E5%AE%AB/" rel="prev" title="bugku-黄道十二宫">
+      <i class="fa fa-chevron-left"></i> bugku-黄道十二宫
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
   </article>
-
-    </div>
-  </div>
   
   
-  
-
   
 
 

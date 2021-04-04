@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="misc入门31-50">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ctfshow-misc入门-31-50">
+<meta property="og:url" content="http://yoursite.com/2021/04/04/ctfshow-misc%E5%85%A5%E9%97%A8-31-50/index.html">
+<meta property="og:site_name" content="V3D4&#39;s Blog">
+<meta property="og:description" content="misc入门31-50">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210401210216786.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQyODgwNzE5,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="http://yoursite.com/2021/04/04/ctfshow-misc%E5%85%A5%E9%97%A8-31-50/misc43.png">
+<meta property="og:image" content="http://yoursite.com/2021/04/04/ctfshow-misc%E5%85%A5%E9%97%A8-31-50/misc43-1.png">
+<meta property="og:image" content="http://yoursite.com/2021/04/04/ctfshow-misc%E5%85%A5%E9%97%A8-31-50/misc48.png">
+<meta property="og:image" content="http://yoursite.com/2021/04/04/ctfshow-misc%E5%85%A5%E9%97%A8-31-50/misc49.png">
+<meta property="article:published_time" content="2021-04-04T10:57:14.000Z">
+<meta property="article:modified_time" content="2021-04-04T12:25:16.557Z">
+<meta property="article:author" content="V3geD4g">
+<meta property="article:tag" content="ctfshow">
+<meta property="article:tag" content="misc入门">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20210401210216786.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQyODgwNzE5,size_16,color_FFFFFF,t_70">
+
+<link rel="canonical" href="http://yoursite.com/2021/04/04/ctfshow-misc%E5%85%A5%E9%97%A8-31-50/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>ctfshow-misc入门-31-50 | V3D4's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+    
+	<a href="https://github.com/V3geD4g" target="_blank" rel="noopener" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+    
+	<header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">V3D4's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">安全技术记录/分享/交流</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/04/04/ctfshow-misc%E5%85%A5%E9%97%A8-31-50/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="V3geD4g">
+      <meta itemprop="description" content="一个小菜鸡的个人博客">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="V3D4's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ctfshow-misc入门-31-50
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-04-04 18:57:14 / 修改时间：20:25:16" itemprop="dateCreated datePublished" datetime="2021-04-04T18:57:14+08:00">2021-04-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/writeup/" itemprop="url" rel="index"><span itemprop="name">writeup</span></a>
+                </span>
+            </span>
+
+          
+            <div class="post-description">misc入门31-50</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="misc31"><a href="#misc31" class="headerlink" title="misc31"></a>misc31</h1><p>老套路，同misc24，算出bmp像素数再算下宽度改了即可，这里是487202/3/150，最后宽度1082，除不尽没事，应该是后面故意多加了几个字节</p>
+<p>想了解bmp的可以看看这篇文章<a href="https://zhuanlan.zhihu.com/p/260702527" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/260702527</a></p>
+<p>也贴一个最普通的爆破bmp宽度的脚本，爆破完得自己手动找(ˉ▽ˉ；)…</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> struct</span><br><span class="line"><span class="keyword">import</span> zlib</span><br><span class="line">f = open(<span class="string">'./misc31/misc31.bmp'</span>,<span class="string">'rb'</span>)</span><br><span class="line">c = f.read()</span><br><span class="line">width = c[<span class="number">18</span>:<span class="number">22</span>]</span><br><span class="line">height = c[<span class="number">22</span>:<span class="number">26</span>]</span><br><span class="line"><span class="comment"># 爆破bmp宽度</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">900</span>,<span class="number">1100</span>):</span><br><span class="line">    f1 = open(<span class="string">'./bpout/'</span>+str(i)+<span class="string">'.bmp'</span>,<span class="string">'wb'</span>)</span><br><span class="line">    <span class="comment"># print(struct.pack('&gt;i',i)[::-1])</span></span><br><span class="line">    img = c[:<span class="number">18</span>]+struct.pack(<span class="string">'&gt;i'</span>,i)[::<span class="number">-1</span>]+c[<span class="number">22</span>:]</span><br><span class="line">    f1.write(img)</span><br><span class="line">    f1.close()</span><br></pre></td></tr></table></figure>
+
+<h1 id="misc32"><a href="#misc32" class="headerlink" title="misc32"></a>misc32</h1><p>老套路，爆破png宽度，网上随便搜一堆，不讲了，贴个腊鸡脚本</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> struct</span><br><span class="line"><span class="keyword">import</span> zlib</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">4096</span>):</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> range(<span class="number">4096</span>):</span><br><span class="line">        c = bytes.fromhex(<span class="string">'4948445200000384000000960802000000'</span>)<span class="comment">#ihdr段不包括crc</span></span><br><span class="line">        ihdr = c[:<span class="number">4</span>]+struct.pack(<span class="string">'&gt;i'</span>,i)+struct.pack(<span class="string">'&gt;i'</span>,j)+c[<span class="number">12</span>:]</span><br><span class="line">        crc = <span class="number">0xE14A4C0B</span></span><br><span class="line">        <span class="keyword">if</span> zlib.crc32(ihdr) == crc:</span><br><span class="line">            print(hex(i),hex(j))</span><br><span class="line">            exit(<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+
+<h1 id="misc33"><a href="#misc33" class="headerlink" title="misc33"></a>misc33</h1><p>同上，只是把高也改了，crc32还是正确的</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> struct</span><br><span class="line"><span class="keyword">import</span> zlib</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">4096</span>):</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> range(<span class="number">4096</span>):</span><br><span class="line">        c = bytes.fromhex(<span class="string">'4948445200000384000000960802000000'</span>)</span><br><span class="line">        ihdr = c[:<span class="number">4</span>]+struct.pack(<span class="string">'&gt;i'</span>,i)+struct.pack(<span class="string">'&gt;i'</span>,j)+c[<span class="number">12</span>:]</span><br><span class="line">        crc = <span class="number">0x5255A798</span></span><br><span class="line">        <span class="keyword">if</span> zlib.crc32(ihdr) == crc:</span><br><span class="line">            print(hex(i),hex(j))</span><br><span class="line">            exit(<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+
+<h1 id="misc34"><a href="#misc34" class="headerlink" title="misc34"></a>misc34</h1><p>IHDR块的CRC改成错误宽度的crc了，所以上面方法不适用，直接暴力爆破宽度，手动找</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> struct</span><br><span class="line"><span class="keyword">import</span> zlib</span><br><span class="line"><span class="comment">#爆破png宽度</span></span><br><span class="line">f = open(<span class="string">r'misc34.png'</span>,<span class="string">'rb'</span>)</span><br><span class="line">c = f.read()</span><br><span class="line">width = c[<span class="number">16</span>:<span class="number">20</span>]</span><br><span class="line">height = c[<span class="number">20</span>:<span class="number">24</span>]</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">900</span>,<span class="number">1200</span>):</span><br><span class="line">    f1 = open(<span class="string">'./bpout/'</span>+str(i)+<span class="string">'.png'</span>,<span class="string">'wb'</span>)</span><br><span class="line">    <span class="comment"># print(struct.pack('&gt;i',i)[::-1])</span></span><br><span class="line">    img = c[:<span class="number">20</span>]+struct.pack(<span class="string">'&gt;i'</span>,i)+c[<span class="number">24</span>:]</span><br><span class="line">    f1.write(img)</span><br><span class="line">    f1.close()</span><br></pre></td></tr></table></figure>
+
+<h1 id="misc35"><a href="#misc35" class="headerlink" title="misc35"></a>misc35</h1><p>这题先把高度改高一点，flag在先下面，然后去爆破jpg的宽度，原理都差不多</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> struct</span><br><span class="line"><span class="keyword">import</span> zlib</span><br><span class="line"><span class="comment">#爆破jpg宽度</span></span><br><span class="line">f = open(<span class="string">'./misc35/misc35.jpg'</span>,<span class="string">'rb'</span>)</span><br><span class="line">c = f.read()</span><br><span class="line"><span class="comment"># width = c[c.index(b'\x00\x96\x03\x84')+2:c.index(b'\x00\x96\x03\x84')+4]</span></span><br><span class="line"><span class="comment"># height = c[c.index(b'\x00\x96\x03\x84'):c.index(b'\x00\x96\x03\x84')+2]</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">900</span>,<span class="number">1000</span>):</span><br><span class="line">    f1 = open(<span class="string">'./bpout/'</span>+str(i)+<span class="string">'.jpg'</span>,<span class="string">'wb'</span>)</span><br><span class="line">    <span class="comment"># print(struct.pack('&gt;i',i)[::-1])</span></span><br><span class="line">    img = c[:c.index(<span class="string">b'\x02\x96\x03\x84'</span>)+<span class="number">2</span>]+struct.pack(<span class="string">'&gt;h'</span>,i)+c[c.index(<span class="string">b'\x02\x96\x03\x84'</span>)+<span class="number">4</span>:]</span><br><span class="line">    f1.write(img)</span><br><span class="line">    f1.close()</span><br></pre></td></tr></table></figure>
+
+<h1 id="misc36"><a href="#misc36" class="headerlink" title="misc36"></a>misc36</h1><p>这题也先把gif的高度拉高，记得修改不止一处，然后再去爆破宽度，当然不用脚本也行，这题给了范围，手动试试就好</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> struct</span><br><span class="line"><span class="keyword">import</span> zlib</span><br><span class="line"><span class="comment">#爆破gif宽度</span></span><br><span class="line">f = open(<span class="string">'./misc36/misc36.gif'</span>,<span class="string">'rb'</span>)</span><br><span class="line">c = f.read()</span><br><span class="line"><span class="comment"># width = c[c.index(b'\x00\x96\x03\x84')+2:c.index(b'\x00\x96\x03\x84')+4]</span></span><br><span class="line"><span class="comment"># height = c[c.index(b'\x00\x96\x03\x84'):c.index(b'\x00\x96\x03\x84')+2]</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">920</span>,<span class="number">950</span>):</span><br><span class="line">    f1 = open(<span class="string">'./bpout/'</span>+str(i)+<span class="string">'.gif'</span>,<span class="string">'wb'</span>)</span><br><span class="line">    <span class="comment"># print(struct.pack('&gt;i',i)[::-1])</span></span><br><span class="line">    img = c[:c.index(<span class="string">b'\x00\x00\x84\x03\x96\x02'</span>)+<span class="number">2</span>]+struct.pack(<span class="string">'&gt;h'</span>,i)[::<span class="number">-1</span>]+c[c.index(<span class="string">b'\x00\x00\x84\x03\x96\x02'</span>)+<span class="number">4</span>:]</span><br><span class="line">    f1.write(img)</span><br><span class="line">    f1.close()</span><br></pre></td></tr></table></figure>
+
+<h1 id="misc37"><a href="#misc37" class="headerlink" title="misc37"></a>misc37</h1><p>在9、14、21、31、34帧里，直接stegsolve看就行</p>
+<h1 id="misc38"><a href="#misc38" class="headerlink" title="misc38"></a>misc38</h1><p>是一张apng图片，即动态的png图片，用浏览器安装个插件就可以看到动态效果了（好像有些浏览器默认支持），这里推荐用<a href="http://www.downcc.com/soft/40902.html" target="_blank" rel="noopener">apngdisassembler</a>直接分离每一帧，找找就好了</p>
+<h1 id="misc39"><a href="#misc39" class="headerlink" title="misc39"></a>misc39</h1><p>gif帧数间隔隐写，kali里用命令<code>identify -format &quot;%T &quot; misc39.gif &gt; misc39.txt</code>提取帧数，转01再七位一组转字符即可（为啥是七位就要问套神了😶）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">s = <span class="string">'37 37 36 36 36 37 37 37 37 37 36 37 36 36 37 37 36 36 37 37 36 37 37 37 36 36 37 37 37 37 36 37 36 36 36 37 37 36 37 37 37 37 37 37 37 36 37 37 37 37 37 37 37 36 37 37 36 37 37 36 37 36 37 36 37 37 36 36 37 36 36 37 37 37 36 36 36 36 37 37 36 36 36 37 36 37 37 36 36 37 36 37 37 36 36 37 37 36 37 37 36 36 37 37 36 36 37 37 37 36 36 37 36 37 37 37 36 36 37 36 37 37 36 37 36 37 37 37 36 36 37 37 36 37 37 36 36 36 37 36 36 37 37 36 37 37 37 37 37 36 36 36 37 36 37 37 36 36 37 36 37 36 37 37 36 36 37 36 36 37 37 36 37 37 36 36 37 37 37 36 36 36 37 37 36 36 37 36 36 36 37 37 37 36 36 37 36 37 37 36 37 37 36 36 37 37 36 36 37 37 37 37 36 36 36 36 37 36 37 37 37 36 36 37 37 37 36 36 37 36 37 37 37 36 36 36 37 36 37 37 36 36 36 37 37 37 37 36 36 36 36 37 36 37 37 36 36 36 36 36 37 37 36 37 36 36 36 37 37 36 37 36 37 36 37 37 37 36 36 37 37 37 37 37 37 36 37'</span></span><br><span class="line">s = s.replace(<span class="string">'37'</span>,<span class="string">'1'</span>).replace(<span class="string">'36'</span>,<span class="string">'0'</span>).replace(<span class="string">' '</span>,<span class="string">''</span>)</span><br><span class="line"><span class="comment"># s = s[1:]</span></span><br><span class="line">print(s)</span><br><span class="line">print(len(s))</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(len(s)//<span class="number">7</span>):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        print(chr(int(s[i*<span class="number">7</span>:i*<span class="number">7</span>+<span class="number">7</span>],<span class="number">2</span>)),end=<span class="string">''</span>)</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">pass</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="misc40"><a href="#misc40" class="headerlink" title="misc40"></a>misc40</h1><p>原理跟上题差不多，只不过换成了apng的帧时间间隔隐写，用<a href="http://www.downcc.com/soft/40902.html" target="_blank" rel="noopener">apngdisassembler</a>分解的时候会带一个时间间隔的txt，所以脚本很好写，还有前面多了些干扰数据，所以从28个开始</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#apng时间隐写</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">28</span>,<span class="number">69</span>):</span><br><span class="line">    f = open(<span class="string">'./misc40/apngframe'</span>+str(i)+<span class="string">'.txt'</span>)</span><br><span class="line">    c =f.read()</span><br><span class="line">    print(chr(int(c.split(<span class="string">'/'</span>)[<span class="number">0</span>].split(<span class="string">'='</span>)[<span class="number">1</span>])),end=<span class="string">''</span>)</span><br></pre></td></tr></table></figure>
+
+<h1 id="misc41"><a href="#misc41" class="headerlink" title="misc41"></a>misc41</h1><p>愚人节专属题目，在010里面直接搜F001看高亮部分即可（不要问为什么，问就是八神师傅脑洞太大了）(直接偷个mumuzi的图)</p>
+<p><img src="https://img-blog.csdnimg.cn/20210401210216786.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQyODgwNzE5,size_16,color_FFFFFF,t_70" alt="misc41"></p>
+<h1 id="misc42"><a href="#misc42" class="headerlink" title="misc42"></a>misc42</h1><p>IDAT块长度隐写，拖到tweakpng就很容易看出来，当然前面也多了些干扰数据，从99，116开始</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">s = [<span class="number">99</span>,<span class="number">116</span>,<span class="number">102</span>,<span class="number">115</span>,<span class="number">104</span>,<span class="number">111</span>,<span class="number">119</span>,<span class="number">123</span>,<span class="number">48</span>,<span class="number">55</span>,<span class="number">56</span>,<span class="number">99</span>,<span class="number">98</span>,<span class="number">100</span>,<span class="number">48</span>,<span class="number">102</span>,<span class="number">57</span>,<span class="number">99</span>,<span class="number">56</span>,<span class="number">100</span>,<span class="number">51</span>,<span class="number">102</span>,<span class="number">50</span>,<span class="number">49</span>,<span class="number">53</span>,<span class="number">56</span>,<span class="number">101</span>,<span class="number">55</span>,<span class="number">48</span>,<span class="number">53</span>,<span class="number">50</span>,<span class="number">57</span>,<span class="number">102</span>,<span class="number">56</span>,<span class="number">57</span>,<span class="number">49</span>,<span class="number">51</span>,<span class="number">99</span>,<span class="number">54</span>,<span class="number">53</span>,<span class="number">125</span>]</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> s:</span><br><span class="line">    print(chr(i),end=<span class="string">''</span>)</span><br></pre></td></tr></table></figure>
+
+<h1 id="misc43"><a href="#misc43" class="headerlink" title="misc43"></a>misc43</h1><p>CRC32隐写，一拖入tweakpng就一堆报错，每块IDAT的CRC32都是错的，使用pngdebugger提取错误的crc，再转hex转字符就好了</p>
+<p><img src="/2021/04/04/ctfshow-misc%E5%85%A5%E9%97%A8-31-50/misc43.png" alt="misc43"></p>
+<p><img src="/2021/04/04/ctfshow-misc%E5%85%A5%E9%97%A8-31-50/misc43-1.png" alt="misc43-1"></p>
+<h1 id="misc44"><a href="#misc44" class="headerlink" title="misc44"></a>misc44</h1><p>也是一种CRC32隐写，错误的CRC32和正确的CRC32分别代表着01，再8位一组转字符，劝大家不要拖进tweakpng，因为会有几百个弹窗。。。</p>
+<p>至于如何提取正确和错误的CRC32，我的做法是用<a href="https://www.anquanke.com/post/id/86793" target="_blank" rel="noopener">PCRT</a>识别再放入txt，再写个脚本，就比较容易</p>
+<p>PCRT命令如下</p>
+<p><code>python PCRT.py -y -v -i misc44.png &gt; 123.txt</code></p>
+<p>python脚本如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">f = open(<span class="string">'123.txt'</span>)</span><br><span class="line">res = <span class="string">''</span></span><br><span class="line"><span class="keyword">while</span> <span class="number">1</span>:</span><br><span class="line">    c = f.readline()</span><br><span class="line">    <span class="keyword">if</span> c:</span><br><span class="line">        <span class="keyword">if</span> <span class="string">'chunk crc'</span> <span class="keyword">in</span> c:</span><br><span class="line">            <span class="comment"># print(c)</span></span><br><span class="line">            res+=<span class="string">'0'</span></span><br><span class="line">        <span class="keyword">elif</span> <span class="string">'Correct IDAT CRC'</span> <span class="keyword">in</span> c:</span><br><span class="line">            res+=<span class="string">'1'</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">print(res)</span><br><span class="line">print(len(res))</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(len(res)//<span class="number">8</span>):</span><br><span class="line">    a = res[i*<span class="number">8</span>:i*<span class="number">8</span>+<span class="number">8</span>]</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        print(chr(int(a,<span class="number">2</span>)),end=<span class="string">''</span>)</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">pass</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="misc45"><a href="#misc45" class="headerlink" title="misc45"></a>misc45</h1><p>不会，菜鸡完全看不出来😭</p>
+<h1 id="misc46"><a href="#misc46" class="headerlink" title="misc46"></a>misc46</h1><p>比较有意思的一个题，用gif每一帧的偏移量作为坐标来画图即可，这里gif的偏移量我是用identify命令直接获取的</p>
+<p><code>identify misc46.gif &gt; 233.txt</code></p>
+<p>再写个脚本画图即可</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> PIL <span class="keyword">import</span> Image</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">f = open(<span class="string">'233.txt'</span>)</span><br><span class="line">pp = []</span><br><span class="line"><span class="keyword">while</span> <span class="number">1</span>:</span><br><span class="line">    c = f.readline()</span><br><span class="line">    <span class="keyword">if</span> c:</span><br><span class="line">        s = eval(c.split(<span class="string">'+'</span>)[<span class="number">1</span>]+<span class="string">','</span>+c.split(<span class="string">'+'</span>)[<span class="number">2</span>][:<span class="number">2</span>])</span><br><span class="line">        pp.append(s)</span><br><span class="line">        print(s)</span><br><span class="line">        <span class="comment"># print(c)</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">img = Image.new(<span class="string">'RGB'</span>,(<span class="number">400</span>,<span class="number">70</span>),(<span class="number">255</span>,<span class="number">255</span>,<span class="number">255</span>))</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> pp:</span><br><span class="line">    new = Image.new(<span class="string">'RGB'</span>,(<span class="number">1</span>,<span class="number">1</span>),(<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>))</span><br><span class="line">    img.paste(new,i)</span><br><span class="line">plt.imshow(img)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+<h1 id="misc47"><a href="#misc47" class="headerlink" title="misc47"></a>misc47</h1><p>跟上一题差不多，只不过图片格式变成了apng，apng每一帧的偏移提取稍微有点麻烦，我是自己在hex定位后写脚本提取的</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> struct</span><br><span class="line"><span class="keyword">from</span> PIL <span class="keyword">import</span> Image</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">f = open(<span class="string">'misc47.png'</span>,<span class="string">'rb'</span>)</span><br><span class="line">c = f.read()</span><br><span class="line">c = c[c.index(bytes.fromhex(<span class="string">'6663544C00000001'</span>)):]</span><br><span class="line">pp = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>,<span class="number">1124</span>,<span class="number">2</span>):</span><br><span class="line">    start = c.index(bytes.fromhex(<span class="string">'6663544C0000'</span>)+struct.pack(<span class="string">'&gt;h'</span>,i))</span><br><span class="line">    <span class="comment"># start = c.index(bytes.fromhex('6663544C000000'+hex(i)[2:]))</span></span><br><span class="line">    <span class="comment"># print(start)</span></span><br><span class="line">    fc = c[start:start+<span class="number">30</span>]</span><br><span class="line">    print(fc[<span class="number">18</span>:<span class="number">20</span>],fc[<span class="number">22</span>:<span class="number">24</span>])</span><br><span class="line">    print(struct.unpack(<span class="string">'&gt;h'</span>,fc[<span class="number">18</span>:<span class="number">20</span>])+struct.unpack(<span class="string">'&gt;h'</span>,fc[<span class="number">22</span>:<span class="number">24</span>]))</span><br><span class="line">    pp.append(struct.unpack(<span class="string">'&gt;h'</span>,fc[<span class="number">18</span>:<span class="number">20</span>])+struct.unpack(<span class="string">'&gt;h'</span>,fc[<span class="number">22</span>:<span class="number">24</span>]))</span><br><span class="line">    <span class="comment"># print(fc.index(b'\xb6'),fc.index(b'\x34'))</span></span><br><span class="line"><span class="comment"># print(c[:100])</span></span><br><span class="line">img = Image.new(<span class="string">'RGB'</span>,(<span class="number">400</span>,<span class="number">70</span>),(<span class="number">255</span>,<span class="number">255</span>,<span class="number">255</span>))</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> pp:</span><br><span class="line">    new = Image.new(<span class="string">'RGB'</span>,(<span class="number">1</span>,<span class="number">1</span>),(<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>))</span><br><span class="line">    img.paste(new,i)</span><br><span class="line">plt.imshow(img)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+<h1 id="misc48"><a href="#misc48" class="headerlink" title="misc48"></a>misc48</h1><p>脑洞题，问八神师傅才知道的</p>
+<p>根据DQT块的提示，叫我们统计FF的数量再减1，一开始我以为是统计所有的，完全没找到思路，后来八神师傅说是统计每两个有意义块之间的FF的数量再减一，因为每两个有意义块之间插入数据好像是不太影响的，至于要减一是因为这段中的最后一个FF是下一个有意义块的开头，取前32个段即可，会发现每个段长度都不超过16，所以直接转为16进制就是flag</p>
+<p><img src="/2021/04/04/ctfshow-misc%E5%85%A5%E9%97%A8-31-50/misc48.png" alt="misc48"></p>
+<p>就是上图种紫色的FF段，取前32段的长度减一转16进制即可（不要忘记第一个），最后统计出来长度如下</p>
+<p><code>0 12 11 0 7 10 13 13 9 0 9 13 0 13 6 0 10 9 2 1 0 1 10 8 11 5 12 7 2 2 3 10</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">s = <span class="string">'0 12 11 0 7 10 13 13 9 0 9 13 0 13 6 0 10 9 2 1 0 1 10 8 11 5 12 7 2 2 3 10'</span></span><br><span class="line">d = <span class="string">'0123456789abcdef'</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> s.split(<span class="string">' '</span>):</span><br><span class="line">    print(d[int(i)],end=<span class="string">''</span>)</span><br></pre></td></tr></table></figure>
+
+<h1 id="misc49"><a href="#misc49" class="headerlink" title="misc49"></a>misc49</h1><p>脑洞题，也是问八神师傅才知道的</p>
+<p>拖到010会发现开头有好多FFE?的块，后面还跟着一些奇怪的设备名，一开始我统计了下FFE0-FFEF块的数量，发现刚好32个，然后就没思路了，后来问了下八神师傅，原来E后面的那位就是flag，最后按照这些块的顺序把E后面那位合起来就行了，最后如下</p>
+<p><code>0c618671a153f5da3948fdb2a2238e44</code></p>
+<p><img src="/2021/04/04/ctfshow-misc%E5%85%A5%E9%97%A8-31-50/misc49.png" alt="misc49"></p>
+<h1 id="misc50"><a href="#misc50" class="headerlink" title="misc50"></a>misc50</h1><p>直接stegsolve看就有了</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ctfshow/" rel="tag"># ctfshow</a>
+              <a href="/tags/misc%E5%85%A5%E9%97%A8/" rel="tag"># misc入门</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/03/28/ctfshow-misc%E5%85%A5%E9%97%A8-1-30/" rel="prev" title="ctfshow-misc入门-1-30">
+      <i class="fa fa-chevron-left"></i> ctfshow-misc入门-1-30
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#misc31"><span class="nav-number">1.</span> <span class="nav-text">misc31</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#misc32"><span class="nav-number">2.</span> <span class="nav-text">misc32</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#misc33"><span class="nav-number">3.</span> <span class="nav-text">misc33</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#misc34"><span class="nav-number">4.</span> <span class="nav-text">misc34</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#misc35"><span class="nav-number">5.</span> <span class="nav-text">misc35</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#misc36"><span class="nav-number">6.</span> <span class="nav-text">misc36</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#misc37"><span class="nav-number">7.</span> <span class="nav-text">misc37</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#misc38"><span class="nav-number">8.</span> <span class="nav-text">misc38</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#misc39"><span class="nav-number">9.</span> <span class="nav-text">misc39</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#misc40"><span class="nav-number">10.</span> <span class="nav-text">misc40</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#misc41"><span class="nav-number">11.</span> <span class="nav-text">misc41</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#misc42"><span class="nav-number">12.</span> <span class="nav-text">misc42</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#misc43"><span class="nav-number">13.</span> <span class="nav-text">misc43</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#misc44"><span class="nav-number">14.</span> <span class="nav-text">misc44</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#misc45"><span class="nav-number">15.</span> <span class="nav-text">misc45</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#misc46"><span class="nav-number">16.</span> <span class="nav-text">misc46</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#misc47"><span class="nav-number">17.</span> <span class="nav-text">misc47</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#misc48"><span class="nav-number">18.</span> <span class="nav-text">misc48</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#misc49"><span class="nav-number">19.</span> <span class="nav-text">misc49</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#misc50"><span class="nav-number">20.</span> <span class="nav-text">misc50</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">V3geD4g</p>
+  <div class="site-description" itemprop="description">一个小菜鸡的个人博客</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">24</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">V3geD4g</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+<br>
+<div class="powered-by">
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <i class="fa fa-user-md"></i>
+    <span id="busuanzi_container_site_uv">
+        本站访客数:<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span id="busuanzi_container_site_pv">
+        本站访问量<span id="busuanzi_value_site_pv"></span>
+    </span>
+</div>
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('post.copy_button').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('post.copy_success')
+          else $(this).text('post.copy_failure')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('post.copy_button')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+  
+  
+    <script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+</body>
+</html>

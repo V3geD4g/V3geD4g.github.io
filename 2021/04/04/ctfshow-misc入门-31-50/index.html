@@ -33,7 +33,7 @@
 <meta property="og:image" content="http://yoursite.com/2021/04/04/ctfshow-misc%E5%85%A5%E9%97%A8-31-50/misc48.png">
 <meta property="og:image" content="http://yoursite.com/2021/04/04/ctfshow-misc%E5%85%A5%E9%97%A8-31-50/misc49.png">
 <meta property="article:published_time" content="2021-04-04T10:57:14.000Z">
-<meta property="article:modified_time" content="2021-04-04T13:41:39.878Z">
+<meta property="article:modified_time" content="2021-04-22T12:58:57.462Z">
 <meta property="article:author" content="V3geD4g">
 <meta property="article:tag" content="ctfshow">
 <meta property="article:tag" content="misc入门">
@@ -226,10 +226,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-04-04 18:57:14 / 修改时间：21:41:39" itemprop="dateCreated datePublished" datetime="2021-04-04T18:57:14+08:00">2021-04-04</time>
+              <time title="创建时间：2021-04-04 18:57:14" itemprop="dateCreated datePublished" datetime="2021-04-04T18:57:14+08:00">2021-04-04</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-04-22 20:58:57" itemprop="dateModified" datetime="2021-04-22T20:58:57+08:00">2021-04-22</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -296,6 +302,7 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">f = open(<span class="string">'123.txt'</span>)</span><br><span class="line">res = <span class="string">''</span></span><br><span class="line"><span class="keyword">while</span> <span class="number">1</span>:</span><br><span class="line">    c = f.readline()</span><br><span class="line">    <span class="keyword">if</span> c:</span><br><span class="line">        <span class="keyword">if</span> <span class="string">'chunk crc'</span> <span class="keyword">in</span> c:</span><br><span class="line">            <span class="comment"># print(c)</span></span><br><span class="line">            res+=<span class="string">'0'</span></span><br><span class="line">        <span class="keyword">elif</span> <span class="string">'Correct IDAT CRC'</span> <span class="keyword">in</span> c:</span><br><span class="line">            res+=<span class="string">'1'</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">print(res)</span><br><span class="line">print(len(res))</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(len(res)//<span class="number">8</span>):</span><br><span class="line">    a = res[i*<span class="number">8</span>:i*<span class="number">8</span>+<span class="number">8</span>]</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        print(chr(int(a,<span class="number">2</span>)),end=<span class="string">''</span>)</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">pass</span></span><br></pre></td></tr></table></figure>
 
 <h1 id="misc45"><a href="#misc45" class="headerlink" title="misc45"></a>misc45</h1><p>不会，菜鸡完全看不出来😭</p>
+<p>问bit师傅问出来的，直接把png转bmp，再binwalk一下就出来了，具体原因的话，就是在bmp的中间0x10000的地方藏了个gzip，不binwalk很难看出来，png直接读像素啥也看出不来是因为bmp的像素是从左下角开始bgr这样读取的，所以要转换为bmp再binwalk，也是题目提示转换格式的意义所在，只能说八神师傅tql！！！</p>
 <h1 id="misc46"><a href="#misc46" class="headerlink" title="misc46"></a>misc46</h1><p>比较有意思的一个题，用gif每一帧的偏移量作为坐标来画图即可，这里gif的偏移量我是用identify命令直接获取的</p>
 <p><code>identify misc46.gif &gt; 233.txt</code></p>
 <p>再写个脚本画图即可</p>
